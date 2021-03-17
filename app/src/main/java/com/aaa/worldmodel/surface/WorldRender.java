@@ -3,12 +3,12 @@ package com.aaa.worldmodel.surface;
 import android.graphics.Color;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
-import android.opengl.Matrix;
 import android.util.Log;
 
 
-import com.aaa.worldmodel.surface.shape.GLShape;
+import com.aaa.worldmodel.surface.shape.Cube;
 import com.aaa.worldmodel.surface.shape.Triangle;
+import com.aaa.worldmodel.surface.texture.Texture2D;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,47 +20,21 @@ public class WorldRender implements GLSurfaceView.Renderer {
     private static final String TAG = WorldRender.class.getSimpleName();
     private int bgColor;
     private GLSurfaceView surfaceView;
-    private List<GLShape> shapeList;
+    private volatile List<GLDrawable> shapeList;
 
-    public WorldRender(GLSurfaceView surfaceView) {
-        this.surfaceView = surfaceView;
-    }
-
-    public WorldRender(int bgColor) {
+    public WorldRender(GLSurfaceView surfaceView, int bgColor) {
         this.bgColor = bgColor;
+        this.surfaceView = surfaceView;
         shapeList = new ArrayList<>();
     }
 
 
-    private void initShape() {
-        float[] vertex = new float[]{
-                0f, 0f, 0f,
-                -1f, 1f, 0f,
-                1f, 1f, 0f,
-                1f, -1f, 0f
-        };
-        float[] color = new float[]{
-                1f, 0f, 0f,
-                1f, 1f, 0f,
-                0f, 0f, 1f,
-                0f, 1f, 1f
-        };
-
-        Triangle triangle = Triangle.newBuilder()
-                .vertexBuffer(vertex)
-                .colorBuffer(color)
-                .drawType(GLES30.GL_TRIANGLE_FAN)
-                .build();
-
-        addShape(triangle);
-    }
-
-    public void addShape(GLShape shape) {
+    public void addShape(final GLDrawable shape) {
+        Log.i(TAG, "addShape");
         shapeList.add(shape);
-
     }
 
-    public void remove(GLShape shape) {
+    public void remove(GLDrawable shape) {
         shapeList.remove(shape);
     }
 
@@ -70,19 +44,24 @@ public class WorldRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        Log.i(TAG, "onSurfaceCreated: " );
         float bgRed = Color.red(bgColor) / 255f;
         float bgGreen = Color.green(bgColor) / 255f;
         float bgBlue = Color.blue(bgColor) / 255f;
         float bgAlpha = Color.alpha(bgColor) / 255f;
         GLES30.glClearColor(bgRed, bgGreen, bgBlue, bgAlpha);
-        initShape();
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+        Triangle.initProgram();
+        Cube.initProgram();
+        Texture2D.initProgram();
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        Log.i(TAG, "onSurfaceChanged width: " + width+" height : "+height);
         GLES30.glViewport(0, 0, width, height);
-        for (GLShape shape : shapeList) {
-            shape.onSurfaceChanged(gl, width, height);
+        for (GLDrawable shape : shapeList) {
+            shape.onSurfaceChange(width, height);
         }
     }
 
@@ -90,8 +69,10 @@ public class WorldRender implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
 
-        for (GLShape shape : shapeList) {
-            shape.onDrawFrame(gl);
+        Log.i(TAG, "onDrawFrame width: ");
+        for (GLDrawable shape : shapeList) {
+            shape.onDraw();
         }
     }
+
 }

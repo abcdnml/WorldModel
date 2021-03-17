@@ -1,15 +1,19 @@
-package com.aaa.worldmodel.surface.shape;
+package com.aaa.worldmodel.surface;
 
 import android.opengl.GLES30;
-import android.opengl.GLSurfaceView;
 import android.util.Log;
 
-public abstract class GLShape implements GLSurfaceView.Renderer {
+import java.nio.FloatBuffer;
 
-    private static final String TAG = GLShape.class.getSimpleName();
-    protected String vertexShaderCode;
-    protected String fragmentShaderCode;
+public abstract class GLDrawable {
 
+    private static final String TAG = GLDrawable.class.getSimpleName();
+    protected static final int FLOAT_SIZE = 4;
+    protected FloatBuffer vertexBuffer;
+    protected FloatBuffer colorBuffer;
+    public abstract void onDraw();
+
+    public abstract void onSurfaceChange(int width, int height);
 
     /**
      * 编译
@@ -22,7 +26,7 @@ public abstract class GLShape implements GLSurfaceView.Renderer {
     protected static int compileShader(int type, String shaderCode) {
         //创建一个着色器
         final int shaderId = GLES30.glCreateShader(type);
-        Log.e(TAG, "glCreateShader : " + shaderId );
+        Log.e(TAG, "glCreateShader : " + shaderId);
         if (shaderId != 0) {
             //加载到着色器
             GLES30.glShaderSource(shaderId, shaderCode);
@@ -55,7 +59,7 @@ public abstract class GLShape implements GLSurfaceView.Renderer {
      */
     protected static int linkProgram(int vertexShaderId, int fragmentShaderId) {
         final int programId = GLES30.glCreateProgram();
-        Log.e(TAG, "linkProgram err programId: "+programId);
+        Log.e(TAG, "linkProgram programId: " + programId);
         if (programId != 0) {
             //将顶点着色器加入到程序
             GLES30.glAttachShader(programId, vertexShaderId);
@@ -67,7 +71,7 @@ public abstract class GLShape implements GLSurfaceView.Renderer {
             GLES30.glGetProgramiv(programId, GLES30.GL_LINK_STATUS, linkStatus, 0);
             if (linkStatus[0] == 0) {
                 String logInfo = GLES30.glGetProgramInfoLog(programId);
-                Log.e(TAG, "linkProgram err: "+logInfo);
+                Log.e(TAG, "linkProgram err: " + logInfo);
                 GLES30.glDeleteProgram(programId);
                 return 0;
             }
@@ -76,5 +80,21 @@ public abstract class GLShape implements GLSurfaceView.Renderer {
             //创建失败
             return 0;
         }
+    }
+
+    protected static int createGLProgram(String vertexShaderCode, String fragmentShaderCode) {
+        int vertexShaderId = compileShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode);
+        int fragmentShaderId = compileShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode);
+        if (vertexShaderId == 0 || fragmentShaderId == 0) {
+            Log.e(TAG, " shader id is 0  vertex :" + vertexShaderId + " color: " + fragmentShaderId);
+            return 0;
+        }
+
+        int programId = linkProgram(vertexShaderId, fragmentShaderId);
+        if (programId == 0) {
+            Log.e(TAG, " program id is 0");
+            return 0;
+        }
+        return programId;
     }
 }

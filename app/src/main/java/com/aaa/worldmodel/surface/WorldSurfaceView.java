@@ -16,11 +16,12 @@ public class WorldSurfaceView extends GLSurfaceView {
     public WorldSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
+
     }
 
     private void init() {
         setEGLContextClientVersion(3);
-        renderer = new WorldRender(Color.WHITE);
+        renderer = new WorldRender(this,Color.WHITE);
         setRenderer(renderer);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
@@ -28,4 +29,5 @@ public class WorldSurfaceView extends GLSurfaceView {
     public WorldRender getRenderer() {
         return renderer;
     }
+
 }
