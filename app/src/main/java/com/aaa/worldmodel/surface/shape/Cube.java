@@ -1,5 +1,6 @@
 package com.aaa.worldmodel.surface.shape;
 
+import android.content.Context;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -44,7 +45,8 @@ public class Cube extends GLDrawable {
     private static final int COLOR_SIZE = 3;
     private IntBuffer indexBuffer;
 
-    public Cube(float[] vertex, int[] indexs, float[] color) {
+    public Cube(Context context,float[] vertex, int[] indexs, float[] color) {
+        super(context);
         setVertex(vertex);
         setVertexColor(color);
         setVertexIndex(indexs);
@@ -88,7 +90,7 @@ public class Cube extends GLDrawable {
         GLES30.glVertexAttribPointer(LOCATION_COLOR, COLOR_SIZE, GLES30.GL_FLOAT, false, FLOAT_SIZE * COLOR_SIZE, colorBuffer);
 
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, indexBuffer.capacity(), GLES30.GL_UNSIGNED_INT, indexBuffer);
-//        GLES30.glDrawArrays(GLES30.GL_POINTS, 0, vertexBuffer.capacity() / 3);
+        GLES30.glDrawArrays(GLES30.GL_POINTS, 0, vertexBuffer.capacity() / 3);
 
         GLES30.glDisableVertexAttribArray(LOCATION_VERTEX);
         GLES30.glDisableVertexAttribArray(LOCATION_COLOR);
@@ -108,4 +110,5 @@ public class Cube extends GLDrawable {
 
         Matrix.multiplyMM(mMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
     }
+
 }

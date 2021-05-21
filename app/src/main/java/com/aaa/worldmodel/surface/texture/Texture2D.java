@@ -1,5 +1,6 @@
 package com.aaa.worldmodel.surface.texture;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES30;
 import android.opengl.GLUtils;
@@ -49,8 +50,8 @@ public class Texture2D extends GLDrawable {
 
     protected Bitmap mBitmap;
 
-
-    public Texture2D(Bitmap bitmap, float[] vertex, float[] textureCoordinate) {
+    public Texture2D(Context context,Bitmap bitmap, float[] vertex, float[] textureCoordinate) {
+        super(context);
         setVertex(vertex);
         setVertexColor(textureCoordinate);
         this.mBitmap = bitmap;

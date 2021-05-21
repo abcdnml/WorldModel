@@ -1,13 +1,19 @@
 package com.aaa.worldmodel.surface;
 
 import android.graphics.Color;
+import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 
+import com.aaa.worldmodel.surface.obj.Obj3D;
+import com.aaa.worldmodel.surface.obj.Obj3DShape;
+import com.aaa.worldmodel.surface.obj.Obj3DShape1;
+import com.aaa.worldmodel.surface.obj.ObjShape;
 import com.aaa.worldmodel.surface.shape.Cube;
 import com.aaa.worldmodel.surface.shape.Triangle;
+import com.aaa.worldmodel.surface.texture.ImageHandle;
 import com.aaa.worldmodel.surface.texture.Texture2D;
 
 import java.util.ArrayList;
@@ -15,6 +21,8 @@ import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static java.security.AccessController.getContext;
 
 public class WorldRender implements GLSurfaceView.Renderer {
     private static final String TAG = WorldRender.class.getSimpleName();
@@ -51,15 +59,21 @@ public class WorldRender implements GLSurfaceView.Renderer {
         float bgAlpha = Color.alpha(bgColor) / 255f;
         GLES30.glClearColor(bgRed, bgGreen, bgBlue, bgAlpha);
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
-        Triangle.initProgram();
-        Cube.initProgram();
-        Texture2D.initProgram();
+        GLES30.glEnable(GLES30.GL_CULL_FACE_MODE);
+//        Triangle.initProgram();
+//        Cube.initProgram();
+//        Texture2D.initProgram();
+//        Obj3DShape.initProgram(surfaceView.getContext());
+//        Obj3DShape1.initProgram(surfaceView.getContext());
+//        ImageHandle.initProgram(surfaceView.getContext());
+        ObjShape.initProgram(surfaceView.getContext());
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         Log.i(TAG, "onSurfaceChanged width: " + width+" height : "+height);
         GLES30.glViewport(0, 0, width, height);
+
         for (GLDrawable shape : shapeList) {
             shape.onSurfaceChange(width, height);
         }

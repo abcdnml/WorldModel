@@ -24,6 +24,7 @@ public class WorldSurfaceView extends GLSurfaceView {
         renderer = new WorldRender(this,Color.WHITE);
         setRenderer(renderer);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
+//        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
     public WorldRender getRenderer() {
