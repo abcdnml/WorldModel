@@ -73,6 +73,16 @@ public class Texture2D extends GLDrawable {
 
 
     @Override
+    public void setModelMatrix(float[] matrix) {
+
+    }
+
+    @Override
+    public void onSurfaceCreate(Context context) {
+        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+    }
+
+    @Override
     public void onDraw() {
         if (programId == 0) {
             Log.e(TAG, "Program id is 0 ,may not init");
@@ -170,9 +180,5 @@ public class Texture2D extends GLDrawable {
             return texture[0];
         }
         return 0;
-    }
-
-    public static void initProgram() {
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
     }
 }

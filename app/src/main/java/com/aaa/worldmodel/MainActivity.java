@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.aaa.worldmodel.surface.WorldRender;
 import com.aaa.worldmodel.surface.WorldSurfaceView;
+import com.aaa.worldmodel.surface.obj.MtlInfo;
 import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.surface.obj.Obj3DShape;
 import com.aaa.worldmodel.surface.obj.Obj3DShape1;
@@ -22,7 +23,11 @@ import com.aaa.worldmodel.surface.shape.Triangle;
 import com.aaa.worldmodel.surface.texture.ImageHandle;
 import com.aaa.worldmodel.surface.texture.Texture2D;
 import com.aaa.worldmodel.utils.LogUtils;
+import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -58,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
 //        addTexture2DEffect();
 //        add3DObj();
 //        addMulti3DObj();
-        test3D();
+//        test3D();
+        map();
     }
 
     public void addTriangle() {
@@ -280,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
         worldRender.addShape(border);
 
     }
+
     public void addGlobe() {
 
         int triangleCount = 20;
@@ -367,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
                 0, 0, 0
         };
 
-        Cube cube = new Cube(this,cubeVertex, index, color);
+        Cube cube = new Cube(this, cubeVertex, index, color);
 
         worldRender.addShape(cube);
     }
@@ -470,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
                 1, 0, 1
         };
 
-        Cube cube = new Cube(this,cubeVertex, index, color);
+        Cube cube = new Cube(this, cubeVertex, index, color);
 
         worldRender.addShape(cube);
     }
@@ -494,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.huskar);
-        Texture2D texture2D = new Texture2D(this,bitmap, sPos, sCoord);
+        Texture2D texture2D = new Texture2D(this, bitmap, sPos, sCoord);
         worldRender.addShape(texture2D);
     }
 
@@ -514,24 +521,25 @@ public class MainActivity extends AppCompatActivity {
                 1.0f, 0.0f,
                 1.0f, 1.0f,
         };
-        FloatBuffer vertexCoordinate=ByteBuffer.allocateDirect(4*2*4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(sPos);
+        FloatBuffer vertexCoordinate = ByteBuffer.allocateDirect(4 * 2 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(sPos);
         vertexCoordinate.flip();
-        FloatBuffer textureCoordinate=ByteBuffer.allocateDirect(4*2*4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(sCoord);
+        FloatBuffer textureCoordinate = ByteBuffer.allocateDirect(4 * 2 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer().put(sCoord);
         textureCoordinate.flip();
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.huskar);
-        ImageHandle imageHandle = new ImageHandle(this,bitmap, vertexCoordinate, textureCoordinate,4,new float[]{0f,1f,0f},true);
+        ImageHandle imageHandle = new ImageHandle(this, bitmap, vertexCoordinate, textureCoordinate, 4, new float[]{0f, 1f, 0f}, true);
         worldRender.addShape(imageHandle);
     }
 
-    public void add3DObj(){
-        Obj3DShape obj3DShape1=new Obj3DShape(this);
-        obj3DShape1.temp=true;
-        Obj3DShape obj3DShape2=new Obj3DShape(this);
+    public void add3DObj() {
+        Obj3DShape obj3DShape1 = new Obj3DShape(this);
+        obj3DShape1.temp = true;
+        Obj3DShape obj3DShape2 = new Obj3DShape(this);
         worldRender.addShape(obj3DShape1);
         worldRender.addShape(obj3DShape2);
     }
-    public void addMulti3DObj(){
+
+    public void addMulti3DObj() {
 /*        List<Obj3D> multiObj= ObjReader.readMultiObj(this,"assets/obj/pikachu.obj");
         for(Obj3D obj3D: multiObj){
             Obj3DShape1 obj3DShape1=new Obj3DShape1(this,obj3D,0.008f);
@@ -557,19 +565,205 @@ public class MainActivity extends AppCompatActivity {
 //            worldRender.addShape(obj3DShape1);
 //        }
 
-        List<Obj3D> multiObj2= ObjReader.readMultiObj(this,"assets/obj/test.obj");
-        LogUtils.i("obj size: "+multiObj2.size());
-        for(Obj3D obj3D: multiObj2){
-            Obj3DShape1 obj3DShape1=new Obj3DShape1(this,obj3D,1);
+        List<Obj3D> multiObj2 = ObjReader.readMultiObj(this, "assets/obj/test.obj");
+        LogUtils.i("obj size: " + multiObj2.size());
+        for (Obj3D obj3D : multiObj2) {
+            Obj3DShape1 obj3DShape1 = new Obj3DShape1(this, obj3D, 1);
             worldRender.addShape(obj3DShape1);
         }
     }
 
-    public void test3D(){
-        List<Obj3D> multiObj2= ObjReader.readMultiObj(this,"assets/obj/bigwhite/Bigmax_White_OBJ.obj");
-        for(Obj3D obj3D: multiObj2){
-            ObjShape objShape=new ObjShape(this,obj3D,0.01f);
+    public void test3D() {
+        List<Obj3D> multiObj2 = ObjReader.readMultiObj(this, "assets/obj/bigwhite/Bigmax_White_OBJ.obj");
+        for (Obj3D obj3D : multiObj2) {
+            ObjShape objShape = new ObjShape(this, obj3D, 0.01f);
             worldRender.addShape(objShape);
         }
     }
+
+    public void map() {
+        Gson gson = new Gson();
+        LDMapBean ldMapBean = gson.fromJson(readAssetString("test/map.json"), LDMapBean.class);
+        int[] mapdata = new int[ldMapBean.baseMapData.length()];
+        for (int i = 0; i < ldMapBean.baseMapData.length(); i++) {
+            mapdata[i] = ldMapBean.baseMapData.charAt(i) - '0';
+        }
+        Obj3D obj3D = arrayToObj(ldMapBean.width, ldMapBean.height, mapdata, ldMapBean.resolution);
+        ObjShape objShape = new ObjShape(this, obj3D, 1f);
+        worldRender.addShape(objShape);
+
+    }
+
+    public String readAssetString(String path) {
+        String parent = path.substring(0, path.lastIndexOf("/") + 1);
+        String tmp = null;
+        StringBuffer buffer = new StringBuffer();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(getAssets().open(path)));
+            while ((tmp = br.readLine()) != null) {
+                buffer.append(tmp);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        tmp = buffer.toString();
+        LogUtils.ls(tmp);
+        return tmp;
+    }
+
+    //数据转换成obj格式
+    public Obj3D arrayToObj(int width, int height, int[] data, float resolution) {
+
+        MtlInfo mtlInfo = MtlInfo.newBuilder()
+                .Ka(new float[]{0.8f, 0.8f, 0.8f})
+                .Kd(new float[]{0.8f, 0.8f,0f})
+                .Ks(new float[]{0.8f, 0.8f, 0.8f})
+                .Ke(new float[]{1f, 1f, 1f})
+                .Ns(32)
+                .illum(2)
+                .build();
+
+
+        FloatBuffer vertex = ByteBuffer.allocateDirect(width * height * 6 * 6 * 3 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        FloatBuffer vertexNormal = ByteBuffer.allocateDirect(width * height * 6 * 6 * 3 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        FloatBuffer vertexTexture = ByteBuffer.allocateDirect(width * height * 6 * 6 * 2 * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+
+
+
+        int minX=width;
+        int minZ=height;
+        int maxX=0;
+        int maxZ=0;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int type = data[i * width + j];
+                if (type == 0) {
+                    //0 墙内
+//                    genCube(vertex, vertexTexture, vertexNormal, j, i, width, height, resolution);
+                } else if (type == 1) {
+                    //1 墙
+                    genWall(vertex, vertexTexture, vertexNormal, j, i, width, height, resolution);
+                } else if(type==2){
+                    //2 墙外
+                }else{
+
+                }
+            }
+        }
+        //直接画宽高大小的地板
+        genFloor(vertex, vertexTexture, vertexNormal,width,height,resolution);
+
+        vertex.flip();
+        vertexNormal.flip();
+        vertexTexture.flip();
+        LogUtils.i(vertex.toString());
+        Obj3D obj3D = Obj3D.newBuilder()
+                .mtl(mtlInfo)
+                .vert(vertex)
+                .vertNorl(vertexNormal)
+                .vertTexture(vertexTexture)
+                .vertCount(vertex.capacity() / 3)
+                .build();
+        return obj3D;
+    }
+
+    public void genCube(FloatBuffer v, FloatBuffer vt, FloatBuffer vn, int x, int z, int width, int height, float resolution) {
+
+        float offsetX = x * resolution - width * resolution / 2;
+        float offsetY = -resolution / 2;
+        float offsetZ = z * resolution - height * resolution / 2;
+        float rectX = resolution;
+        float rectY = resolution;
+        float rectZ = resolution;
+        addCuboidVertex(v, vt, vn, rectX, rectY, rectZ, offsetX, offsetY, offsetZ);
+    }
+
+    public void genWall(FloatBuffer v, FloatBuffer vt, FloatBuffer vn, int x, int z, int width, int height, float resolution) {
+
+        float offsetX = x * resolution - width * resolution / 2;
+        float offsetY = resolution / 2;
+        float offsetZ = z * resolution - height * resolution / 2;
+        float rectX = resolution;
+        float rectY = 10 * resolution;
+        float rectZ = resolution;
+        addCuboidVertex(v, vt, vn, rectX, rectY, rectZ, offsetX, offsetY, offsetZ);
+    }
+
+    public void genFloor(FloatBuffer v, FloatBuffer vt, FloatBuffer vn, int width, int height, float resolution) {
+        float offsetX = -width * resolution / 2;
+        float offsetY = -resolution / 2;
+        float offsetZ = -height * resolution / 2;
+        float rectX = width * resolution;
+        float rectY = resolution;
+        float rectZ = height * resolution;
+        addCuboidVertex(v, vt, vn, rectX, rectY, rectZ, offsetX, offsetY, offsetZ);
+    }
+
+    public void addCuboidVertex(FloatBuffer v, FloatBuffer vt, FloatBuffer vn, float rectX, float rectY, float rectZ, float offsetX, float offsetY, float offsetZ) {
+        float[] vertex = new float[]{
+                -rectX + offsetX, rectY + offsetY, rectZ + offsetZ,//前 左 上
+                rectX + offsetX, rectY + offsetY, rectZ + offsetZ,//前 右 上
+                rectX + offsetX, -rectY + offsetY, rectZ + offsetZ,//前 右 下
+                -rectX + offsetX, -rectY + offsetY, rectZ + offsetZ,//前 左 下
+                -rectX + offsetX, rectY + offsetY, -rectZ + offsetZ,//后 左 上
+                rectX + offsetX, rectY + offsetY, -rectZ + offsetZ,//后 右 上
+                rectX + offsetX, -rectY + offsetY, -rectZ + offsetZ,//后 右 下
+                -rectX + offsetX, -rectY + offsetY, -rectZ + offsetZ,//后 左 下
+        };
+
+        int[] index = new int[]{
+                0, 1, 2, 0, 2, 3,//正面两个三角形
+                4, 5, 6, 4, 6, 7,//背面
+                0, 4, 7, 0, 7, 3,//左侧
+                1, 5, 6, 1, 6, 2, //右侧
+                0, 1, 5, 0, 5, 4,//上
+                3, 2, 6, 3, 6, 7
+        };
+        float[] normal = new float[]{
+                0, 1, 0,//上
+                0, -1, 0,//下
+                -1, 0, 0,//左
+                1, 0, 0,//右
+                0, 0, 1,//前
+                0, 0, -1//后
+        };
+        int[] normalIndex = new int[]{
+                4, 4, 4, 4, 4, 4,//正面两个三角形
+                5, 5, 5, 5, 5, 5,//背面
+                2, 2, 2, 2, 2, 2,//左侧
+                3, 3, 3, 3, 3, 3, //右侧
+                0, 0, 0, 0, 0, 0,//上
+                1, 1, 1, 1, 1, 1//下
+        };
+
+        float[] texture = new float[]{
+                0.0f, 0.0f,
+                0.0f, 1.0f,
+                1.0f, 1.0f,
+                1.0f, 0.0f,
+        };
+
+        int[] textureIndex = new int[]{
+                0, 1, 2, 0, 2, 3,//正面两个三角形
+                1, 0, 3, 1, 3, 2,//背面
+                1, 0, 3, 1, 3, 2,//左侧
+                0, 1, 2, 0, 2, 3, //右侧
+                3, 2, 1, 3, 1, 0,//上
+                0, 1, 2, 0, 2, 3//下
+        };
+
+        for (int i = 0; i < index.length; i++) {
+            v.put(vertex[index[i] * 3]);
+            v.put(vertex[index[i] * 3 + 1]);
+            v.put(vertex[index[i] * 3 + 2]);
+
+            vn.put(normal[normalIndex[i] * 3]);
+            vn.put(normal[normalIndex[i] * 3 + 1]);
+            vn.put(normal[normalIndex[i] * 3 + 2]);
+
+            vt.put(texture[textureIndex[i] * 2]);
+            vt.put(texture[textureIndex[i] * 2 + 1]);
+        }
+    }
+
 }

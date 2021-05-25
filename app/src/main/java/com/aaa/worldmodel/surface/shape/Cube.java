@@ -75,6 +75,16 @@ public class Cube extends GLDrawable {
     }
 
     @Override
+    public void setModelMatrix(float[] matrix) {
+
+    }
+
+    @Override
+    public void onSurfaceCreate(Context context) {
+        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+    }
+
+    @Override
     public void onDraw() {
         if (programId == 0) {
             Log.e(TAG, "Program id is 0 ,may not init");
@@ -94,10 +104,6 @@ public class Cube extends GLDrawable {
 
         GLES30.glDisableVertexAttribArray(LOCATION_VERTEX);
         GLES30.glDisableVertexAttribArray(LOCATION_COLOR);
-    }
-
-    public static void initProgram() {
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override

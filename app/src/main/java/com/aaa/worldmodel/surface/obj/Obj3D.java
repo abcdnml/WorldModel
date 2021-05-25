@@ -1,7 +1,5 @@
 package com.aaa.worldmodel.surface.obj;
 
-import android.util.Log;
-
 import com.aaa.worldmodel.utils.LogUtils;
 
 import java.nio.ByteBuffer;
@@ -25,8 +23,20 @@ public class Obj3D {
     private ArrayList<Float> tempVertNorl;
     public ArrayList<Float> tempVertTexture;
 
-    public int textureSMode;
-    public int textureTMode;
+
+    private Obj3D(Builder builder) {
+        vertCount = builder.vertCount;
+        vert = builder.vert;
+        vertNorl = builder.vertNorl;
+        vertTexture = builder.vertTexture;
+        mtl = builder.mtl;
+    }
+    public Obj3D( ) {
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
 
     public void addVert(float d){
         if(tempVert==null){
@@ -105,4 +115,44 @@ public class Obj3D {
         vertTexture.position(0);
     }
 
+
+    public static final class Builder {
+        private int vertCount;
+        private FloatBuffer vert;
+        private FloatBuffer vertNorl;
+        private FloatBuffer vertTexture;
+        private MtlInfo mtl;
+
+        private Builder() {
+        }
+
+        public Builder vertCount(int vertCount) {
+            this.vertCount = vertCount;
+            return this;
+        }
+
+        public Builder vert(FloatBuffer vert) {
+            this.vert = vert;
+            return this;
+        }
+
+        public Builder vertNorl(FloatBuffer vertNorl) {
+            this.vertNorl = vertNorl;
+            return this;
+        }
+
+        public Builder vertTexture(FloatBuffer vertTexture) {
+            this.vertTexture = vertTexture;
+            return this;
+        }
+
+        public Builder mtl(MtlInfo mtl) {
+            this.mtl = mtl;
+            return this;
+        }
+
+        public Obj3D build() {
+            return new Obj3D(this);
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.aaa.worldmodel.surface;
 
 import android.content.Context;
 import android.opengl.GLES30;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import java.nio.FloatBuffer;
@@ -101,6 +102,7 @@ public abstract class GLDrawable {
         return programId;
     }
 
+
     public static float[] getOriginalMatrix() {
         return new float[]{
                 1, 0, 0, 0,
@@ -109,6 +111,11 @@ public abstract class GLDrawable {
                 0, 0, 0, 1
         };
     }
+
+
+    public abstract void setModelMatrix(float[] matrix);
+
+    public abstract void onSurfaceCreate(Context context);
 
     public abstract void onDraw();
 

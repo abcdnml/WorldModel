@@ -60,6 +60,16 @@ public class Obj3DShape1 extends GLDrawable {
     }
 
     @Override
+    public void setModelMatrix(float[] matrix) {
+
+    }
+
+    @Override
+    public void onSurfaceCreate(Context context) {
+
+    }
+
+    @Override
     public void onDraw() {
         GLES30.glUseProgram(programId);
         Matrix.rotateM(mMatrix,0,0.3f,0,1,0);

@@ -49,7 +49,13 @@ public class ImageHandle extends GLDrawable {
 
     }
 
-    public static void initProgram(Context context) {
+    @Override
+    public void setModelMatrix(float[] matrix) {
+
+    }
+
+    @Override
+    public void onSurfaceCreate(Context context) {
         vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/image_effect.vert", context.getResources());
         fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/image_effect.frag", context.getResources());
         programId = createGLProgram(vertexShaderCode, fragmentShaderCode);

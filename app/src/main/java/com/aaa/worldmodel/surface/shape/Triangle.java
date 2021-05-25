@@ -61,11 +61,6 @@ public class Triangle extends GLDrawable {
         return new Builder();
     }
 
-    public static void initProgram() {
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
-    }
-
-
     public void setDrawType(int type) {
         if (type == GLES30.GL_TRIANGLES || type == GLES30.GL_TRIANGLE_STRIP || type == GLES30.GL_TRIANGLE_FAN) {
             drawType = type;
@@ -93,6 +88,16 @@ public class Triangle extends GLDrawable {
         Matrix.setLookAtM(mVMatrix, 0, 3, 3, 3, 0f, 0f, 0f, 0f, 0.0f, 1.0f);
 
         Matrix.multiplyMM(mMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+    }
+
+    @Override
+    public void setModelMatrix(float[] matrix) {
+
+    }
+
+    @Override
+    public void onSurfaceCreate(Context context) {
+        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override
