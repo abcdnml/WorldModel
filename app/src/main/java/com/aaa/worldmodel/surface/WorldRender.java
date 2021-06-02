@@ -10,6 +10,7 @@ import com.aaa.worldmodel.LDMapBean;
 import com.aaa.worldmodel.surface.obj.MtlInfo;
 import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.surface.obj.ObjShape;
+import com.aaa.worldmodel.surface.obj.ObjTextureShape;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -64,7 +65,11 @@ public class WorldRender implements GLSurfaceView.Renderer {
 //        Obj3DShape.initProgram(surfaceView.getContext());
 //        Obj3DShape1.initProgram(surfaceView.getContext());
 //        ImageHandle.initProgram(surfaceView.getContext());
-        ObjShape.initProgram(surfaceView.getContext());
+//        ObjShape.initProgram(surfaceView.getContext());
+//        ObjTextureShape.initProgram(surfaceView.getContext());
+        for(GLDrawable shape:shapeList){
+            shape.onSurfaceCreate(surfaceView.getContext());
+        }
     }
 
     @Override
@@ -92,15 +97,12 @@ public class WorldRender implements GLSurfaceView.Renderer {
 
     }
 
-    public void setMapData(LDMapBean ldMapBean) {
-    }
-
 
     //缩放
     //旋转
     public void rotate(float x, float y) {
-        Matrix.rotateM(modelMatrix, 0, -x/5, 0, 1, 0);
-//        Matrix.rotateM(modelMatrix, 0, -y, 1, 0, 0);
+        Matrix.setRotateM(modelMatrix, 0, -y, 1, 0, 0);
+        Matrix.rotateM(modelMatrix,0, -x, 0, 1, 0);
         for (GLDrawable shape : shapeList) {
             shape.setModelMatrix(modelMatrix);
         }

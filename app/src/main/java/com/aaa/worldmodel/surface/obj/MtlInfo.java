@@ -1,5 +1,7 @@
 package com.aaa.worldmodel.surface.obj;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by wuwang on 2017/2/22
  */
@@ -11,6 +13,7 @@ public class MtlInfo {
     public float[] Ks=new float[3];     //高光色
     public float[] Ke=new float[3];     //
     public float Ns;                    //shininess
+    public Bitmap bitmap;     //
     public String map_Kd;               //固有纹理贴图
     public String map_Ks;               //高光纹理贴图
     public String map_Ka;               //阴影纹理贴图
@@ -32,6 +35,7 @@ public class MtlInfo {
         Ke = builder.Ke;
         Ns = builder.Ns;
         map_Kd = builder.map_Kd;
+        bitmap = builder.bitmap;
         map_Ks = builder.map_Ks;
         map_Ka = builder.map_Ka;
         illum = builder.illum;
@@ -50,6 +54,7 @@ public class MtlInfo {
         private float[] Ke;
         private float Ns;
         private String map_Kd;
+        private Bitmap bitmap;
         private String map_Ks;
         private String map_Ka;
         private int illum;
@@ -99,6 +104,10 @@ public class MtlInfo {
 
         public Builder map_Ka(String map_Ka) {
             this.map_Ka = map_Ka;
+            return this;
+        }
+        public Builder bitmap(Bitmap bitmap) {
+            this.bitmap = bitmap;
             return this;
         }
 

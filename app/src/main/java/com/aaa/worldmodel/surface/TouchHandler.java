@@ -13,6 +13,10 @@ public class TouchHandler {
     private boolean isScale;
     private WorldSurfaceView mMapView;
 
+    private float x = 0;
+    private float y = 0;
+    float scale=5;
+
     public TouchHandler(final WorldSurfaceView mapView) {
         mMapView = mapView;
         mGestureDetector = new GestureDetector(mapView.getContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -23,9 +27,18 @@ public class TouchHandler {
 
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                Log.i(TAG, "onScroll distanceX : " + distanceX + "  distanceY: " + distanceY);
+//                Log.i(TAG, "onScroll distanceX : " + distanceX + "  distanceY: " + distanceY);
 //                mapView.translate(distanceX,distanceY);
-                mapView.getRenderer().rotate(distanceX,distanceY);
+
+                x = x + distanceX;
+                Log.i(TAG, "onScroll x : " + x + "  y: " + y);
+                if (y + distanceY > 90*scale || y + distanceY <0) {
+                    distanceY = 0;
+                } else {
+                    y = y + distanceY;
+                }
+
+                mapView.getRenderer().rotate(x/scale, y/scale);
                 return true;
             }
         });
