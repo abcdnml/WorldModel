@@ -12,6 +12,7 @@ import java.util.ArrayList;
  */
 
 public class Obj3D {
+    public String name;
     public int vertCount;
     public FloatBuffer vert;
     public FloatBuffer vertNorl;

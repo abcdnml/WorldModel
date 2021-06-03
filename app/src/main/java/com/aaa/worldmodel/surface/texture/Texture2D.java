@@ -73,7 +73,7 @@ public class Texture2D extends GLDrawable {
 
 
     @Override
-    public void setModelMatrix(float[] matrix) {
+    public void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix) {
 
     }
 

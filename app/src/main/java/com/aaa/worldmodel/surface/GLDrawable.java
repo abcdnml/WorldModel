@@ -113,7 +113,7 @@ public abstract class GLDrawable {
     }
 
 
-    public abstract void setModelMatrix(float[] matrix);
+    public abstract void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix);
 
     public abstract void onSurfaceCreate(Context context);
 

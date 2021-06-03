@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 
 import com.aaa.worldmodel.surface.GLDrawable;
 import com.aaa.worldmodel.twodimensional.ShaderUtil;
+import com.aaa.worldmodel.utils.LogUtils;
 
 public class ObjShape extends GLDrawable {
     private static final int LOCATION_POSITION = 0;
@@ -18,10 +19,9 @@ public class ObjShape extends GLDrawable {
 
 
     static int programId;
-    static String vertexShaderCode;
-    static String fragmentShaderCode;
+    private String vertexShaderCode;
+    private String fragmentShaderCode;
 
-    float aspectRatio = 1;
     float scale = 1f;
     private int lightType = 2;
 
@@ -31,6 +31,10 @@ public class ObjShape extends GLDrawable {
     private float[] normalMatrix = new float[16];
     private float[] tempmatrix = new float[16];
 
+    float offsetX=1f;
+    float offsetY=1f;
+    float offsetZ=1f;
+
     private Obj3D obj3D;
 
     public ObjShape(Context context, Obj3D obj3D, float scale) {
@@ -39,15 +43,17 @@ public class ObjShape extends GLDrawable {
         this.scale = scale;
     }
 
-    public static void initProgram(Context context) {
-        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl.vert", context.getResources());
-        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl.frag", context.getResources());
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
-    }
-
     @Override
-    public void setModelMatrix(float[] matrix) {
-        System.arraycopy(matrix, 0, modelMatrix, 0, matrix.length);
+    public void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix) {
+        System.arraycopy(mMatrix, 0, modelMatrix, 0, mMatrix.length);
+        System.arraycopy(vMatrix, 0, mVMatrix, 0, vMatrix.length);
+        System.arraycopy(pMatrix, 0, mProjMatrix, 0, pMatrix.length);
+
+        if("床头柜".equals(obj3D.name)){
+            LogUtils.i("床头柜便宜");
+            Matrix.translateM(modelMatrix,0,modelMatrix,0,offsetX,0,offsetZ);
+        }
+
         Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
 
         Matrix.invertM(tempmatrix, 0, modelMatrix, 0);
@@ -56,13 +62,14 @@ public class ObjShape extends GLDrawable {
 
     @Override
     public void onSurfaceCreate(Context context) {
-        initProgram(context);
+        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl.vert", context.getResources());
+        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl.frag", context.getResources());
+        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override
     public void onDraw() {
         GLES30.glUseProgram(programId);
-//        Matrix.rotateM(mMatrix,0,0.3f,0,1,0);
         int location = GLES30.glGetAttribLocation(programId, "aPos");
         GLES30.glEnableVertexAttribArray(location);
         GLES30.glVertexAttribPointer(location, 3, GLES30.GL_FLOAT, false, 0, obj3D.vert);
@@ -77,6 +84,8 @@ public class ObjShape extends GLDrawable {
             GLES30.glEnableVertexAttribArray(location);
             GLES30.glVertexAttribPointer(location, 2, GLES30.GL_FLOAT, false, 0, obj3D.vertTexture);
         }
+
+
 
         location = GLES30.glGetUniformLocation(programId, "model");
         GLES30.glUniformMatrix4fv(location, 1, false, modelMatrix, 0);
@@ -119,11 +128,6 @@ public class ObjShape extends GLDrawable {
 
     @Override
     public void onSurfaceChange(int width, int height) {
-        aspectRatio = (width + 0f) / height;
-        //眼睛坐标和法向量一定要算好 要不然 看到别的地方去了
-        Matrix.setLookAtM(mVMatrix, 0, 0, 9, 0, 0f, 0f, 0f, 0f, 0f, -1.0f);
-        Matrix.perspectiveM(mProjMatrix, 0, 60, aspectRatio, 0.1f, 100);
-
         Matrix.invertM(tempmatrix, 0, modelMatrix, 0);
         Matrix.transposeM(normalMatrix, 0, tempmatrix, 0);
 

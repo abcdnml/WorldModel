@@ -60,7 +60,7 @@ public class Obj3DShape1 extends GLDrawable {
     }
 
     @Override
-    public void setModelMatrix(float[] matrix) {
+    public void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix) {
 
     }
 

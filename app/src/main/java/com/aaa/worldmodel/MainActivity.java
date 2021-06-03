@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 //        addTexture2DEffect();
 //        add3DObj();
 //        addMulti3DObj();
-//        test3D();
+        test3D();
         map();
     }
 
@@ -574,9 +574,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void test3D() {
-        List<Obj3D> multiObj2 = ObjReader.readMultiObj(this, "assets/obj/bigwhite/Bigmax_White_OBJ.obj");
+        List<Obj3D> multiObj2 = ObjReader.readMultiObj(this, "assets/obj/床头柜.obj");
         for (Obj3D obj3D : multiObj2) {
             ObjShape objShape = new ObjShape(this, obj3D, 0.01f);
+            obj3D.name="床头柜";
             worldRender.addShape(objShape);
         }
     }

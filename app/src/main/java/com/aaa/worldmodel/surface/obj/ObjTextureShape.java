@@ -54,8 +54,8 @@ public class ObjTextureShape extends GLDrawable {
     }
 
     @Override
-    public void setModelMatrix(float[] matrix) {
-        System.arraycopy(matrix, 0, modelMatrix, 0, matrix.length);
+    public void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix) {
+        System.arraycopy(mMatrix, 0, modelMatrix, 0, mMatrix.length);
         Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
 
         Matrix.invertM(tempmatrix, 0, modelMatrix, 0);
