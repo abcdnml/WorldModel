@@ -6,6 +6,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.aaa.worldmodel.utils.LogUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,9 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class WorldRender implements GLSurfaceView.Renderer {
     private static final String TAG = WorldRender.class.getSimpleName();
+    private static final float MAX_SCALE = 4;
+    private static final float MIN_SCALE = 0.25f;
+    final float TOUCH_SCALE_AC = 5;
     private int bgColor;
     private GLSurfaceView surfaceView;
     private volatile List<GLDrawable> shapeList;
@@ -21,6 +26,9 @@ public class WorldRender implements GLSurfaceView.Renderer {
     private float[] mProjMatrix = new float[16];
     private float[] mVMatrix = new float[16];
     private float[] eye = new float[9];
+    private float rotateX = 0;
+    private float rotateY = 0;
+    private float scale = 1;
 
     public WorldRender(GLSurfaceView surfaceView, int bgColor) {
         this.bgColor = bgColor;
@@ -28,11 +36,10 @@ public class WorldRender implements GLSurfaceView.Renderer {
         shapeList = new ArrayList<>();
     }
 
-
     public void addShape(final GLDrawable shape) {
         Log.i(TAG, "addShape");
         shapeList.add(shape);
-        shape.setMatrix(modelMatrix,mVMatrix,mProjMatrix);
+        shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
     }
 
     public void remove(GLDrawable shape) {
@@ -54,7 +61,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
         GLES30.glEnable(GLES30.GL_CULL_FACE_MODE);
 
-        for(GLDrawable shape:shapeList){
+        for (GLDrawable shape : shapeList) {
             shape.onSurfaceCreate(surfaceView.getContext());
         }
     }
@@ -66,10 +73,10 @@ public class WorldRender implements GLSurfaceView.Renderer {
 
         float aspectRatio = (width + 0f) / height;
         //眼睛坐标和法向量一定要算好 要不然 看到别的地方去了
-        Matrix.setLookAtM(mVMatrix, 0, 0, 9, 0, 0f, 0f, 0f, 0f, 0f, -1.0f);
+        Matrix.setLookAtM(mVMatrix, 0, 0, 9, 0, 0f, 0f, 0f, 0f, 0f, -1f);
         Matrix.perspectiveM(mProjMatrix, 0, 90, aspectRatio, 0.1f, 100);
         for (GLDrawable shape : shapeList) {
-            shape.setMatrix(modelMatrix,mVMatrix,mProjMatrix);
+            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
             shape.onSurfaceChange(width, height);
         }
     }
@@ -84,35 +91,58 @@ public class WorldRender implements GLSurfaceView.Renderer {
         }
     }
 
-    //平移  平移某个模型 还是平移视角
+    //平移  平移某个模型 还是平移视角  双指平移视角?
     public void translate() {
 
     }
-
-    private float rotateX = 0;
-    private float rotateY = 0;
-    float touchScale =5;
 
     //旋转
     public void rotate(float distanceX, float distanceY) {
         rotateX = rotateX + distanceX;
         Log.i(TAG, "onScroll rotateX : " + rotateX + "  rotateY: " + rotateY);
-        if (rotateY + distanceY > 90* touchScale || rotateY + distanceY <0) {
+        if (rotateY + distanceY > 90 * TOUCH_SCALE_AC || rotateY + distanceY < 0) {
             distanceY = 0;
         } else {
             rotateY = rotateY + distanceY;
         }
 
-        Matrix.setRotateM(modelMatrix, 0, -rotateY / touchScale, 1, 0, 0);
-        Matrix.rotateM(modelMatrix,0, -rotateX / touchScale, 0, 1, 0);
+        Matrix.setRotateM(modelMatrix, 0, -rotateY / TOUCH_SCALE_AC, 1, 0, 0);
+        Matrix.rotateM(modelMatrix, 0, -rotateX / TOUCH_SCALE_AC, 0, 1, 0);
+        Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
 
         for (GLDrawable shape : shapeList) {
-            shape.setMatrix(modelMatrix,mVMatrix,mProjMatrix);
+            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
         }
         surfaceView.requestRender();
     }
 
-    public void scale(float scaleX,float scaleY){
+    public void scale(float s) {
+        //这样写可以造成一个缩放回弹的效果 回弹效果要在scaleEnd时重新设置回边界大小
+        Matrix.scaleM(modelMatrix, 0, s, s, s);
+        scale=scale*s;
+        for (GLDrawable shape : shapeList) {
+            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
+        }
+        surfaceView.requestRender();
+    }
 
+    public void onScaleEnd(float s){
+        float tempScale = scale * s;
+        LogUtils.i("scale end ");
+        if (tempScale > MAX_SCALE) {
+            s=MAX_SCALE/scale;
+            scale = MAX_SCALE;
+        }else if (tempScale < MIN_SCALE) {
+            s=MIN_SCALE/scale;
+            scale = MIN_SCALE;
+        }else{
+            scale = tempScale;
+        }
+        Matrix.scaleM(modelMatrix, 0, s, s, s);
+
+        for (GLDrawable shape : shapeList) {
+            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
+        }
+        surfaceView.requestRender();
     }
 }

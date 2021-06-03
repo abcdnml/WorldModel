@@ -111,8 +111,8 @@ public class MapDataConverter {
 
         MtlInfo mtlInfo = MtlInfo.newBuilder()
                 .Ka(new float[]{0f, 0f, 0f})
-                .Kd(new float[]{0.1f, 1f, 0.1f})
-                .Ks(new float[]{1f, 1f, 1f})
+                .Kd(new float[]{ 0.89300000667572f, 0.93328571319580f, 0.93999999761581f})
+                .Ks(new float[]{0.09019608050585f, 0.10980392247438f, 0.13333334028721f})
                 .Ke(new float[]{1f, 1f, 1f})
                 .Ns(32)
 //                .bitmap(bitmap)
@@ -152,11 +152,11 @@ public class MapDataConverter {
 //        Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.mipmap.chat);
 
         MtlInfo mtlInfo = MtlInfo.newBuilder()
-                .Ka(new float[]{0f, 0f, 0f})
-                .Kd(new float[]{0.1f, 1f, 0.1f})
+                .Ka(new float[]{0.5f, 0.5f, 0.5f})
+                .Kd(new float[]{1f, 1f, 1f})
                 .Ks(new float[]{1f, 1f, 1f})
                 .Ke(new float[]{1f, 1f, 1f})
-                .Ns(32)
+                .Ns(100)
 //                .bitmap(bitmap)
                 .illum(7)
                 .build();
@@ -192,7 +192,7 @@ public class MapDataConverter {
 
     public  static  void genCube(FloatBuffer v, FloatBuffer vt, FloatBuffer vn, int x, int z, int width, int height, float resolution, boolean[] adjucent) {
         float offsetX = x * resolution - width * resolution / 2;
-        float offsetY = -resolution / 2;
+        float offsetY = resolution / 2;
         float offsetZ = z * resolution - height * resolution / 2;
         float rectX = resolution;
         float rectY = resolution;
@@ -203,10 +203,10 @@ public class MapDataConverter {
     public  static void genWall(FloatBuffer v, FloatBuffer vt, FloatBuffer vn, int x, int z, int width, int height, float resolution, boolean[] adjucent) {
 
         float offsetX = x * resolution - width * resolution / 2;
-        float offsetY = -resolution / 2;
+        float offsetY = 30 * resolution-resolution/2;
         float offsetZ = z * resolution - height * resolution / 2;
         float rectX = resolution;
-        float rectY = 10 * resolution;
+        float rectY = 30 * resolution;
         float rectZ = resolution;
         addCuboidVertex(v, vt, vn, rectX, rectY, rectZ, offsetX, offsetY, offsetZ, adjucent);
 

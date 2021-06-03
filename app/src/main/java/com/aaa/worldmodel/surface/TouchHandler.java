@@ -45,7 +45,7 @@ public class TouchHandler {
                 float dF = curScaleFactor - preScaleFactor;
                 Log.i(TAG, "onScale preScaleFactor : " + preScaleFactor + " curScaleFactor : " + curScaleFactor);
 
-//                mMapView.scale(1f + dF, detector.getFocusX(), detector.getFocusY());
+                mMapView.getRenderer().scale(1f + dF);
 
                 preScaleFactor = curScaleFactor;//保存上一次的伸缩值
                 return super.onScale(detector);
@@ -61,6 +61,7 @@ public class TouchHandler {
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
                 isScale = false;
+                mapView.getRenderer().onScaleEnd(1);
                 super.onScaleEnd(detector);
             }
         });
