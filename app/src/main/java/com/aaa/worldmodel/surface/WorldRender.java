@@ -1,12 +1,16 @@
 package com.aaa.worldmodel.surface;
 
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
 import com.aaa.worldmodel.utils.LogUtils;
+import com.aaa.worldmodel.utils.MatrixUtils;
+import com.aaa.worldmodel.utils.PointF3;
+import com.aaa.worldmodel.utils.PointF4;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,23 +123,23 @@ public class WorldRender implements GLSurfaceView.Renderer {
     public void scale(float s) {
         //这样写可以造成一个缩放回弹的效果 回弹效果要在scaleEnd时重新设置回边界大小
         Matrix.scaleM(modelMatrix, 0, s, s, s);
-        scale=scale*s;
+        scale = scale * s;
         for (GLDrawable shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
         }
         surfaceView.requestRender();
     }
 
-    public void onScaleEnd(float s){
+    public void onScaleEnd(float s) {
         float tempScale = scale * s;
         LogUtils.i("scale end ");
         if (tempScale > MAX_SCALE) {
-            s=MAX_SCALE/scale;
+            s = MAX_SCALE / scale;
             scale = MAX_SCALE;
-        }else if (tempScale < MIN_SCALE) {
-            s=MIN_SCALE/scale;
+        } else if (tempScale < MIN_SCALE) {
+            s = MIN_SCALE / scale;
             scale = MIN_SCALE;
-        }else{
+        } else {
             scale = tempScale;
         }
         Matrix.scaleM(modelMatrix, 0, s, s, s);
@@ -144,5 +148,51 @@ public class WorldRender implements GLSurfaceView.Renderer {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
         }
         surfaceView.requestRender();
+    }
+
+    public PointF getScreenPointBy3d(float x, float y, float z) {
+        float[] temp1 = new float[16];
+        float[] temp2 = new float[16];
+        LogUtils.i("press: " + new PointF3(x, y, z).toString());
+
+        Matrix.multiplyMM(temp1, 0, mProjMatrix, 0, mVMatrix, 0);
+        Matrix.multiplyMM(temp2, 0, temp1, 0, modelMatrix, 0);
+        float w = surfaceView.getWidth();
+        float h = surfaceView.getHeight();
+
+
+        PointF4 pointF4 = MatrixUtils.getTranslatePoint(temp2, new PointF3(x, y, z));
+        LogUtils.i("result p4 " + pointF4);
+        PointF p = new PointF(pointF4.x * w / 2 + w / 2, -h / 2 * pointF4.y + h / 2);
+        LogUtils.i("result screen" + p);
+        return p;
+
+    }
+
+    public void get3DPointByScreen(float x, float y) {
+        float[] temp1 = new float[16];
+        float[] temp2 = new float[16];
+        float[] temp3 = new float[16];
+
+        float w = surfaceView.getWidth();
+        float h = surfaceView.getHeight();
+
+        Matrix.multiplyMM(temp1, 0, mProjMatrix, 0, mVMatrix, 0);
+        Matrix.multiplyMM(temp2, 0, temp1, 0, modelMatrix, 0);
+        Matrix.invertM(temp3, 0, temp2, 0);
+        LogUtils.i("result:x y : " + x + ", " + y);
+
+        PointF4 pointF4 = MatrixUtils.getTranslatePoint(temp2, new PointF3(x / (w / 2) - 1, 1, y / (h / 2) - 1));
+        LogUtils.i("result: " + pointF4.toString());
+
+    }
+
+    public void get3DPointByScreen1(float x, float y) {
+        int w = surfaceView.getWidth();
+        int h = surfaceView.getHeight();
+        LogUtils.i("screen:x y : " + x + ", " + y);
+        float[] xyz = MatrixUtils.unProject((int) x, (int) y, w, h, mProjMatrix, modelMatrix);
+        LogUtils.i("result:xyz: " + xyz[0] + "," + xyz[1] + ", " + xyz[2]);
+
     }
 }

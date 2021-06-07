@@ -2,6 +2,8 @@ package com.aaa.worldmodel;
 
 import android.graphics.Bitmap;
 
+import java.util.List;
+
 /**
  * 地图数据
  * <p>
@@ -30,6 +32,7 @@ public class LDMapBean {
     public long mapId;
     public long pathId;
     public int[] fullMapData;
+    public List<Integer> path;
     public String baseMapData;
     private Bitmap bitmap;
 

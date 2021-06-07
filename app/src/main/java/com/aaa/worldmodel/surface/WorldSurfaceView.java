@@ -25,7 +25,7 @@ public class WorldSurfaceView extends GLSurfaceView  {
 
     private void init() {
         setEGLContextClientVersion(3);
-        renderer = new WorldRender(this,Color.WHITE);
+        renderer = new WorldRender(this,Color.argb(1,33,162,254));
         setRenderer(renderer);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
 //        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
