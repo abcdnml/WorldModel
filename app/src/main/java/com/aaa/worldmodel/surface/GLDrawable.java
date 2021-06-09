@@ -2,7 +2,6 @@ package com.aaa.worldmodel.surface;
 
 import android.content.Context;
 import android.opengl.GLES30;
-import android.opengl.Matrix;
 import android.util.Log;
 
 import java.nio.FloatBuffer;
@@ -113,7 +112,14 @@ public abstract class GLDrawable {
     }
 
 
-    public abstract void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix);
+    public abstract void setMatrix(float[] mMatrix, float[] vMatrix, float[] pMatrix);
+
+    public void setEye(float[] eye) {
+
+    }
+
+    public void setLight(float[] light) {
+    }
 
     public abstract void onSurfaceCreate(Context context);
 

@@ -46,7 +46,10 @@ public class PathDrawable extends GLDrawable {
         int location = GLES30.glGetAttribLocation(programId, "aPos");
         GLES30.glEnableVertexAttribArray(location);
         GLES30.glVertexAttribPointer(location, 3, GLES30.GL_FLOAT, false, 0, path3D.vert);
-        GLES30.glLineWidth(6);
+        GLES30.glLineWidth(4);
+
+        location = GLES30.glGetUniformLocation(programId, "color");
+        GLES30.glUniform3fv(location, 1, path3D.color, 0);
 
         location = GLES30.glGetUniformLocation(programId, "model");
         GLES30.glUniformMatrix4fv(location, 1, false, modelMatrix, 0);

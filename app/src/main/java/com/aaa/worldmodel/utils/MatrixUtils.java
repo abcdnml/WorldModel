@@ -7,8 +7,11 @@
  */
 package com.aaa.worldmodel.utils;
 
+import android.graphics.PointF;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
+
+import java.util.Arrays;
 
 /**
  * Description:
@@ -20,11 +23,7 @@ public enum MatrixUtils {
     public static final int TYPE_CENTERINSIDE = 2;
     public static final int TYPE_FITSTART = 3;
     public static final int TYPE_FITEND = 4;
-    private static final float[] _tempGluUnProjectData = new float[40];
-    private static final int _temp_m = 0;
-    private static final int _temp_A = 16;
-    private static final int _temp_in = 32;
-    private static final int _temp_out = 36;
+
 
     MatrixUtils() {
 
@@ -140,69 +139,6 @@ public enum MatrixUtils {
                 0, 0, 1, 0,
                 0, 0, 0, 1
         };
-    }
-
-    /**
-     * 将物体坐标转换成世界坐标
-     *
-     * @param matrixLeft
-     * @param vectorRight
-     * @return
-     */
-    public static PointF4 getTranslatePoint(float[] matrixLeft, PointF3 vectorRight) {
-        PointF4 p4 = GLKMatrix4MultiplyVector4(matrixLeft, new PointF4(vectorRight.x, vectorRight.y, vectorRight.z, 1.0f));
-//        return PointF3MultiplyScalar(new PointF3(v4.x, v4.y, v4.z), 1.0f / v4.w);
-        return new PointF4(p4.x / p4.w, p4.y / p4.w, p4.z / p4.w, 1.0f / p4.w);
-    }
-
-    public static PointF4 GLKMatrix4MultiplyVector4(float[] matrixLeft, PointF4 vector) {
-        PointF4 v4 = new PointF4();
-        v4.x = matrixLeft[0] * vector.x + matrixLeft[4] * vector.y + matrixLeft[8] * vector.z + matrixLeft[12] * vector.w;
-        v4.y = matrixLeft[1] * vector.x + matrixLeft[5] * vector.y + matrixLeft[9] * vector.z + matrixLeft[13] * vector.w;
-        v4.z = matrixLeft[2] * vector.x + matrixLeft[6] * vector.y + matrixLeft[10] * vector.z + matrixLeft[14] * vector.w;
-        v4.w = matrixLeft[3] * vector.x + matrixLeft[7] * vector.y + matrixLeft[11] * vector.z + matrixLeft[15] * vector.w;
-        return v4;
-    }
-
-    public static int gluUnProject(float winx, float winy, float winz,
-                                   float[] model,
-                                   float[] proj,
-                                   int[] viewport,
-                                   float[] xyz) {
-        /* Normalize between -1 and 1 */
-        _tempGluUnProjectData[_temp_in] = (winx - viewport[0]) * 2f / viewport[2] - 1.0f;
-        _tempGluUnProjectData[_temp_in + 1] = (winy - viewport[1]) * 2f / viewport[3] - 1.0f;
-        _tempGluUnProjectData[_temp_in + 2] = 2f * winz - 1.0f;
-        _tempGluUnProjectData[_temp_in + 3] = 1.0f;
-        /* Get the inverse */
-        Matrix.multiplyMM(_tempGluUnProjectData, _temp_A, proj, 0, model, 0);
-        Matrix.invertM(_tempGluUnProjectData, _temp_m, _tempGluUnProjectData, _temp_A);
-        Matrix.multiplyMV(_tempGluUnProjectData, _temp_out,
-                _tempGluUnProjectData, _temp_m,
-                _tempGluUnProjectData, _temp_in);
-        if (_tempGluUnProjectData[_temp_out + 3] == 0.0) {
-            return GLES30.GL_FALSE;
-        }
-        xyz[0] = _tempGluUnProjectData[_temp_out] / _tempGluUnProjectData[_temp_out + 3];
-        xyz[1] = _tempGluUnProjectData[_temp_out + 1] / _tempGluUnProjectData[_temp_out + 3];
-        xyz[2] = _tempGluUnProjectData[_temp_out + 2] / _tempGluUnProjectData[_temp_out + 3];
-        return GLES30.GL_TRUE;
-    }
-
-    public static float[] unProject(int x, int y,
-                          int viewWidth, int viewHeight,
-                          float[] proj,
-                          float[] model)
-    {
-        float z = 0;
-        float[] xyz=new float[3];
-        int[] viewport=new int[4];
-        viewport[0]=0;
-        viewport[1]=0;
-        viewport[2]=viewWidth;
-        viewport[3]=viewHeight;
-        gluUnProject(x, viewHeight -y, z, model, proj, viewport, xyz);
-        return xyz;
     }
 
 

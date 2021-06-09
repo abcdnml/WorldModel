@@ -578,21 +578,19 @@ public class MainActivity extends AppCompatActivity {
         float modelStride=200;  //顶点跨度范围  要将其缩小到 真实大小0.5 也对应坐标系里的0.5
         LogUtils.i("obj size : "+ multiObj2.size());
         ObjModel objModel = new ObjModel(this, multiObj2);
-        objModel.setOffset(0,0.1f,0);
-        objModel.setRotate(-90,0,0);
-        objModel.setScale(calculateModeScale(0.1f,modelStride));
+        objModel.setOffset(MapDataConverter.convertOffset(162),MapDataConverter.convertOffset(2)+0.2f,0);
+        objModel.setRotate(0,0,0);
+        objModel.setScale(MapDataConverter.calculateModelScale(0.5f,modelStride));
+//        worldRender.addShape(objModel);
+
+        multiObj2 = ObjReader.readMultiObj(this, "assets/obj/扫地机器人.obj");
+        modelStride=3000;  //顶点跨度范围  要将其缩小到 真实大小0.5 也对应坐标系里的0.5
+        objModel = new ObjModel(this, multiObj2);
+        objModel.setOffset(MapDataConverter.convertOffset(2),MapDataConverter.convertOffset(2)+0.2f,0);
+        objModel.setRotate(0,0,0);
+        objModel.setScale(MapDataConverter.calculateModelScale(0.3f,modelStride));
         worldRender.addShape(objModel);
 
-    }
-
-    /**
-     *  计算模型缩放倍数
-     * @param realSize  模型真实大小  单位 m
-     * @param modelScale   模型取值范围
-     * @return
-     */
-    private float calculateModeScale(float realSize,float modelScale){
-        return realSize/modelScale;
     }
 
     public void map() {
@@ -610,6 +608,7 @@ public class MainActivity extends AppCompatActivity {
         Path3D path3D=MapDataConverter.convertPathData(ldMapBean.width,ldMapBean.height,ldMapBean.resolution,ldMapBean.x_min,ldMapBean.y_min,ldMapBean.path);
         PathDrawable pathDrawable=new PathDrawable(this,path3D);
         worldRender.addShape(pathDrawable);
+
     }
 
     public String readAssetString(String path) {
@@ -627,24 +626,4 @@ public class MainActivity extends AppCompatActivity {
         LogUtils.ls(tmp);
         return tmp;
     }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        float x,y,z;
-        if(event.getAction()==MotionEvent.ACTION_UP) {
-//            worldRender.getScreenPointBy3d(event.getX(), 0.5f,event.getY());
-            worldRender.getScreenPointBy3d(0, 0, 0);
-            worldRender.getScreenPointBy3d(0, 0, 1);
-            worldRender.getScreenPointBy3d(1, 0, 0);
-            worldRender.getScreenPointBy3d(0, 1, 0);
-
-            worldRender.get3DPointByScreen1(0, 0);
-            worldRender.get3DPointByScreen1(0, 1);
-            worldRender.get3DPointByScreen1(1, 0);
-            worldRender.get3DPointByScreen1(1, 1);
-        }
-        return super.onTouchEvent(event);
-    }
-
 }

@@ -30,7 +30,8 @@ public class WorldRender implements GLSurfaceView.Renderer {
     private float[] modelMatrix = GLDrawable.getOriginalMatrix();
     private float[] mProjMatrix = new float[16];
     private float[] mVMatrix = new float[16];
-    private float[] eye = new float[9];
+    private float[] eye;
+    private float[] light ;
     private float rotateX = 0;
     private float rotateY = 0;
     private float scale = 1;
@@ -38,13 +39,27 @@ public class WorldRender implements GLSurfaceView.Renderer {
     public WorldRender(GLSurfaceView surfaceView, int bgColor) {
         this.bgColor = bgColor;
         this.surfaceView = surfaceView;
+        init();
+    }
+    private void init(){
         shapeList = new ArrayList<>();
+        eye=new float[]{
+                0, 9, 0 //eye x y z
+        };
+        light =new float[]{
+                -1f, -8f, 0f,       // direction  x y z
+                0.5f, 0.5f, 0.8f,   // ka
+                0.6f, 0.8f, 0.6f,   // kd
+                0.5f, 0.5f, 0.5f,   // ks
+        };
     }
 
     public void addShape(final GLDrawable shape) {
         Log.i(TAG, "addShape");
         shapeList.add(shape);
         shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
+        shape.setEye(eye);
+        shape.setLight(light);
     }
 
     public void remove(GLDrawable shape) {
@@ -78,7 +93,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
 
         float aspectRatio = (width + 0f) / height;
         //眼睛坐标和法向量一定要算好 要不然 看到别的地方去了
-        Matrix.setLookAtM(mVMatrix, 0, 0, 9, 0, 0f, 0f, 0f, 0f, 0f, -1f);
+        Matrix.setLookAtM(mVMatrix, 0, eye[0],eye[1],eye[2],0,0,0,0,0,-1);
         Matrix.perspectiveM(mProjMatrix, 0, 90, aspectRatio, 0.1f, 100);
         for (GLDrawable shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
@@ -151,52 +166,6 @@ public class WorldRender implements GLSurfaceView.Renderer {
         surfaceView.requestRender();
     }
 
-    public PointF getScreenPointBy3d(float x, float y, float z) {
-        float[] temp1 = new float[16];
-        float[] temp2 = new float[16];
-        float[] result = new float[4];
-        LogUtils.i("press: " + new PointF3(x, y, z).toString());
-        float[] input=new float[]{x,y,z,1};
 
 
-        Matrix.multiplyMM(temp1, 0, mProjMatrix, 0, mVMatrix, 0);
-        Matrix.multiplyMM(temp2, 0, temp1, 0, modelMatrix, 0);
-        Matrix.multiplyMV(result, 0,  temp2,  0,input,0);
-        LogUtils.i(" matrix result  "+ Arrays.toString(result) );
-
-        float w = surfaceView.getWidth();
-        float h = surfaceView.getHeight();
-        PointF4 pointF4 = MatrixUtils.getTranslatePoint(temp2, new PointF3(x, y, z));
-        LogUtils.i("result p4 " + pointF4);
-        PointF p = new PointF(pointF4.x * w / 2 +w / 2, h / 2 * pointF4.y + h / 2);
-        LogUtils.i("result screen" + p);
-        return p;
-    }
-
-    public void get3DPointByScreen(float x, float y) {
-        float[] temp1 = new float[16];
-        float[] temp2 = new float[16];
-        float[] temp3 = new float[16];
-
-        float w = surfaceView.getWidth();
-        float h = surfaceView.getHeight();
-
-        Matrix.multiplyMM(temp1, 0, mProjMatrix, 0, mVMatrix, 0);
-        Matrix.multiplyMM(temp2, 0, temp1, 0, modelMatrix, 0);
-        Matrix.invertM(temp3, 0, temp2, 0);
-        LogUtils.i("result:x y : " + x + ", " + y);
-
-        PointF4 pointF4 = MatrixUtils.getTranslatePoint(temp2, new PointF3(x / (w / 2) - 1, 1, y / (h / 2) - 1));
-        LogUtils.i("result: " + pointF4.toString());
-
-    }
-
-    public void get3DPointByScreen1(float x, float y) {
-        int w = surfaceView.getWidth();
-        int h = surfaceView.getHeight();
-        LogUtils.i("screen:x y : " + x + ", " + y);
-        float[] xyz = MatrixUtils.unProject((int) x, (int) y, w, h, mProjMatrix, modelMatrix);
-        LogUtils.i("result:xyz: " + xyz[0] + "," + xyz[1] + ", " + xyz[2]);
-
-    }
 }
