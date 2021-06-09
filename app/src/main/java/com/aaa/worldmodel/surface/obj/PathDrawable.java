@@ -21,9 +21,9 @@ public class PathDrawable extends GLDrawable {
         super(context);
     }
 
-    public PathDrawable(Context context,Path3D path3D) {
+    public PathDrawable(Context context, Path3D path3D) {
         super(context);
-        this.path3D=path3D;
+        this.path3D = path3D;
     }
 
     @Override

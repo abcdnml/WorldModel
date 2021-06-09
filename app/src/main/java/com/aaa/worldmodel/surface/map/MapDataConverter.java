@@ -113,7 +113,7 @@ public class MapDataConverter {
                 .Kd(new float[]{0.89300000667572f, 0.93328571319580f, 0.93999999761581f})
                 .Ks(new float[]{0.09019608050585f, 0.10980392247438f, 0.13333334028721f})
                 .Ke(new float[]{1f, 1f, 1f})
-                .Ns(32)
+                .Ns(1)
 //                .bitmap(bitmap)
                 .illum(7)
                 .build();
@@ -155,7 +155,7 @@ public class MapDataConverter {
                 .Kd(new float[]{1f, 1f, 1f})
                 .Ks(new float[]{1f, 1f, 1f})
                 .Ke(new float[]{1f, 1f, 1f})
-                .Ns(100)
+                .Ns(1)
 //                .bitmap(bitmap)
                 .illum(7)
                 .build();

@@ -13,6 +13,7 @@ import com.aaa.worldmodel.utils.PointF3;
 import com.aaa.worldmodel.utils.PointF4;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -153,20 +154,23 @@ public class WorldRender implements GLSurfaceView.Renderer {
     public PointF getScreenPointBy3d(float x, float y, float z) {
         float[] temp1 = new float[16];
         float[] temp2 = new float[16];
+        float[] result = new float[4];
         LogUtils.i("press: " + new PointF3(x, y, z).toString());
+        float[] input=new float[]{x,y,z,1};
+
 
         Matrix.multiplyMM(temp1, 0, mProjMatrix, 0, mVMatrix, 0);
         Matrix.multiplyMM(temp2, 0, temp1, 0, modelMatrix, 0);
+        Matrix.multiplyMV(result, 0,  temp2,  0,input,0);
+        LogUtils.i(" matrix result  "+ Arrays.toString(result) );
+
         float w = surfaceView.getWidth();
         float h = surfaceView.getHeight();
-
-
         PointF4 pointF4 = MatrixUtils.getTranslatePoint(temp2, new PointF3(x, y, z));
         LogUtils.i("result p4 " + pointF4);
-        PointF p = new PointF(pointF4.x * w / 2 + w / 2, -h / 2 * pointF4.y + h / 2);
+        PointF p = new PointF(pointF4.x * w / 2 +w / 2, h / 2 * pointF4.y + h / 2);
         LogUtils.i("result screen" + p);
         return p;
-
     }
 
     public void get3DPointByScreen(float x, float y) {

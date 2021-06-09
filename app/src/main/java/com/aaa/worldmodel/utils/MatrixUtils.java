@@ -195,8 +195,6 @@ public enum MatrixUtils {
                           float[] model)
     {
         float z = 0;
-        GLES30.glReadBuffer(GLES30.GL_FRONT);
-        GLES30.glReadPixels(x, viewHeight - y, 1, 1, GLES30.GL_DEPTH_COMPONENT, GLES30.GL_FLOAT, 0);
         float[] xyz=new float[3];
         int[] viewport=new int[4];
         viewport[0]=0;

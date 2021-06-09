@@ -18,7 +18,7 @@ import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.surface.obj.Obj3DShape;
 import com.aaa.worldmodel.surface.obj.Obj3DShape1;
 import com.aaa.worldmodel.surface.obj.ObjReader;
-import com.aaa.worldmodel.surface.obj.ObjShape;
+import com.aaa.worldmodel.surface.obj.ObjModel;
 import com.aaa.worldmodel.surface.obj.Path3D;
 import com.aaa.worldmodel.surface.obj.PathDrawable;
 import com.aaa.worldmodel.surface.shape.Cube;
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 //        addTexture2DEffect();
 //        add3DObj();
 //        addMulti3DObj();
-//        test3D();
+        test3D();
         map();
     }
 
@@ -575,11 +575,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void test3D() {
         List<Obj3D> multiObj2 = ObjReader.readMultiObj(this, "assets/obj/床头柜.obj");
-        for (Obj3D obj3D : multiObj2) {
-            ObjShape objShape = new ObjShape(this, obj3D, 0.01f);
-            obj3D.name="床头柜";
-            worldRender.addShape(objShape);
-        }
+        float modelStride=200;  //顶点跨度范围  要将其缩小到 真实大小0.5 也对应坐标系里的0.5
+        LogUtils.i("obj size : "+ multiObj2.size());
+        ObjModel objModel = new ObjModel(this, multiObj2);
+        objModel.setOffset(0,0.1f,0);
+        objModel.setRotate(-90,0,0);
+        objModel.setScale(calculateModeScale(0.1f,modelStride));
+        worldRender.addShape(objModel);
+
+    }
+
+    /**
+     *  计算模型缩放倍数
+     * @param realSize  模型真实大小  单位 m
+     * @param modelScale   模型取值范围
+     * @return
+     */
+    private float calculateModeScale(float realSize,float modelScale){
+        return realSize/modelScale;
     }
 
     public void map() {
@@ -589,13 +602,10 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < ldMapBean.baseMapData.length(); i++) {
             mapdata[i] = ldMapBean.baseMapData.charAt(i) - '0';
         }
-        List<Obj3D> obj3D = MapDataConverter.mapDataToObj(ldMapBean.width, ldMapBean.height, mapdata, ldMapBean.resolution);
 
-        for(Obj3D obj: obj3D){
-//        ObjTextureShape objShape = new ObjTextureShape(this, obj, 1f);
-            ObjShape objShape = new ObjShape(this, obj, 1f);
-            worldRender.addShape(objShape);
-        }
+        List<Obj3D> obj3D = MapDataConverter.mapDataToObj(ldMapBean.width, ldMapBean.height, mapdata, ldMapBean.resolution);
+        ObjModel map = new ObjModel(this, obj3D);
+        worldRender.addShape(map);
 
         Path3D path3D=MapDataConverter.convertPathData(ldMapBean.width,ldMapBean.height,ldMapBean.resolution,ldMapBean.x_min,ldMapBean.y_min,ldMapBean.path);
         PathDrawable pathDrawable=new PathDrawable(this,path3D);
