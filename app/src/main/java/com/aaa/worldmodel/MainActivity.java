@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,16 +14,16 @@ import com.aaa.worldmodel.surface.WorldRender;
 import com.aaa.worldmodel.surface.WorldSurfaceView;
 import com.aaa.worldmodel.surface.map.MapDataConverter;
 import com.aaa.worldmodel.surface.obj.Obj3D;
-import com.aaa.worldmodel.surface.obj.Obj3DShape;
-import com.aaa.worldmodel.surface.obj.Obj3DShape1;
+import com.aaa.worldmodel.surface.model.Obj3DShape;
+import com.aaa.worldmodel.surface.model.Obj3DShape1;
 import com.aaa.worldmodel.surface.obj.ObjReader;
-import com.aaa.worldmodel.surface.obj.ObjModel;
+import com.aaa.worldmodel.surface.model.ObjModel;
 import com.aaa.worldmodel.surface.obj.Path3D;
-import com.aaa.worldmodel.surface.obj.PathDrawable;
-import com.aaa.worldmodel.surface.shape.Cube;
-import com.aaa.worldmodel.surface.shape.Triangle;
-import com.aaa.worldmodel.surface.texture.ImageHandle;
-import com.aaa.worldmodel.surface.texture.Texture2D;
+import com.aaa.worldmodel.surface.model.PathDrawable;
+import com.aaa.worldmodel.surface.model.Cube;
+import com.aaa.worldmodel.surface.model.Triangle;
+import com.aaa.worldmodel.surface.model.ImageHandle;
+import com.aaa.worldmodel.surface.model.Texture2D;
 import com.aaa.worldmodel.utils.LogUtils;
 import com.google.gson.Gson;
 
@@ -604,6 +603,13 @@ public class MainActivity extends AppCompatActivity {
         List<Obj3D> obj3D = MapDataConverter.mapDataToObj(ldMapBean.width, ldMapBean.height, mapdata, ldMapBean.resolution);
         ObjModel map = new ObjModel(this, obj3D);
         worldRender.addShape(map);
+
+        for (int i = 0; i < ldMapBean.path.size() / 2; i++) {
+            float x =ldMapBean.width - (ldMapBean.path.get(i * 2 + 1) / 5 - ldMapBean.y_min * 20); //计算方式就是这样 别问为什么
+            float z = ldMapBean.height - (ldMapBean.path.get(i * 2) / 5 - ldMapBean.x_min * 20);
+
+
+        }
 
         Path3D path3D=MapDataConverter.convertPathData(ldMapBean.width,ldMapBean.height,ldMapBean.resolution,ldMapBean.x_min,ldMapBean.y_min,ldMapBean.path);
         PathDrawable pathDrawable=new PathDrawable(this,path3D);

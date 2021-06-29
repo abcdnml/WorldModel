@@ -1,17 +1,16 @@
-package com.aaa.worldmodel.surface.obj;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES30;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.util.Log;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.twodimensional.ShaderUtil;
 import com.aaa.worldmodel.utils.LogUtils;
 
-public class ObjTextureShape extends GLDrawable {
+public class ObjTextureShape extends Model {
     private static final int LOCATION_POSITION = 0;
     private static final int LOCATION_NORMAL = 1;
     private static final int LOCATION_COORDINATE = 2;
@@ -19,11 +18,6 @@ public class ObjTextureShape extends GLDrawable {
     private static final int LOCATION_MAT_VIEW = 4;
     private static final int LOCATION_MAT_PROJ = 5;
     private static final int LOCATION_MAT_NORMAL = 6;
-
-
-    static int programId;
-    static String vertexShaderCode;
-    static String fragmentShaderCode;
 
     float aspectRatio = 1;
     float scale = 1f;
@@ -48,7 +42,7 @@ public class ObjTextureShape extends GLDrawable {
     public void initProgram(Context context) {
         vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl.vert", context.getResources());
         fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl_texture.frag", context.getResources());
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
 
         textureId=createTexture(obj3D.mtl.bitmap);
     }

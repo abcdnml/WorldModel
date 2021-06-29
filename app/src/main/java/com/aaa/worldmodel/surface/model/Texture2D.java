@@ -1,4 +1,4 @@
-package com.aaa.worldmodel.surface.texture;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,39 +7,17 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.twodimensional.ShaderUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
-public class Texture2D extends GLDrawable {
+public class Texture2D extends Model {
     private static final int LOCATION_VERTEX = 0;
     private static final int LOCATION_COLOR = 1;
     private static final int LOCATION_MATRIX = 2;
     private static final int LOCATION_TEXTURE = 3;
     private static final String TAG = Texture2D.class.getSimpleName();
-
-    protected static int programId;
-
-    protected static String vertexShaderCode = "# version 300 es \n" +
-            "layout (location = 0) in vec4 vPosition;\n" +
-            "layout (location = 1) in vec2 vCoordinate;\n" +
-            "layout (location = 2) uniform mat4 u_Matrix;\n" +
-            "out vec2 aCoordinate;\n" +
-            "void main(){" +
-            "    gl_Position=u_Matrix*vPosition;" +
-            "    aCoordinate=vCoordinate;" +
-            "}";
-
-    protected static String fragmentShaderCode = "# version 300 es \n" +
-            "precision mediump float;" +
-            "layout (location = 3) uniform sampler2D vTexture;" +
-            "in vec2 aCoordinate;" +
-            "out vec4 fragColor;" +
-            "void main(){" +
-            "    fragColor=texture(vTexture,aCoordinate);" +
-            "}";
 
     private final float[] mMatrix = new float[16];
     private final float[] mProjMatrix = new float[16];
@@ -52,6 +30,24 @@ public class Texture2D extends GLDrawable {
 
     public Texture2D(Context context,Bitmap bitmap, float[] vertex, float[] textureCoordinate) {
         super(context);
+        vertexShaderCode = "# version 300 es \n" +
+                "layout (location = 0) in vec4 vPosition;\n" +
+                "layout (location = 1) in vec2 vCoordinate;\n" +
+                "layout (location = 2) uniform mat4 u_Matrix;\n" +
+                "out vec2 aCoordinate;\n" +
+                "void main(){" +
+                "    gl_Position=u_Matrix*vPosition;" +
+                "    aCoordinate=vCoordinate;" +
+                "}";
+        fragmentShaderCode = "# version 300 es \n" +
+                "precision mediump float;" +
+                "layout (location = 3) uniform sampler2D vTexture;" +
+                "in vec2 aCoordinate;" +
+                "out vec4 fragColor;" +
+                "void main(){" +
+                "    fragColor=texture(vTexture,aCoordinate);" +
+                "}";
+
         setVertex(vertex);
         setVertexColor(textureCoordinate);
         this.mBitmap = bitmap;
@@ -79,7 +75,7 @@ public class Texture2D extends GLDrawable {
 
     @Override
     public void onSurfaceCreate(Context context) {
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override

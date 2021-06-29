@@ -1,4 +1,4 @@
-package com.aaa.worldmodel.surface.texture;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,12 +8,11 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
 import com.aaa.worldmodel.utils.LogUtils;
-import com.aaa.worldmodel.surface.GLDrawable;
 import com.aaa.worldmodel.twodimensional.ShaderUtil;
 
 import java.nio.FloatBuffer;
 
-public class ImageHandle extends GLDrawable {
+public class ImageHandle extends Model {
 
 
     private static final int LOCATION_VERTEX_COORDINATE = 0;
@@ -26,9 +25,6 @@ public class ImageHandle extends GLDrawable {
     private static final int LOCATION_XY = 7;
     private static final int VERTEX_SIZE = 2;
     private static final int COLOR_SIZE = 2;
-    protected static int programId;
-    static String vertexShaderCode;
-    static String fragmentShaderCode;
     int effectType;
     int isHalf;
     float[] effectColor;
@@ -58,7 +54,7 @@ public class ImageHandle extends GLDrawable {
     public void onSurfaceCreate(Context context) {
         vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/image_effect.vert", context.getResources());
         fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/image_effect.frag", context.getResources());
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override

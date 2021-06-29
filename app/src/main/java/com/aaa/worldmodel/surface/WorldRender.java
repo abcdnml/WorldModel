@@ -1,19 +1,15 @@
 package com.aaa.worldmodel.surface;
 
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.aaa.worldmodel.surface.model.Model;
 import com.aaa.worldmodel.utils.LogUtils;
-import com.aaa.worldmodel.utils.MatrixUtils;
-import com.aaa.worldmodel.utils.PointF3;
-import com.aaa.worldmodel.utils.PointF4;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -26,8 +22,8 @@ public class WorldRender implements GLSurfaceView.Renderer {
     final float TOUCH_SCALE_AC = 5;
     private int bgColor;
     private GLSurfaceView surfaceView;
-    private volatile List<GLDrawable> shapeList;
-    private float[] modelMatrix = GLDrawable.getOriginalMatrix();
+    private volatile List<Model> shapeList;
+    private float[] modelMatrix = Model.getOriginalMatrix();
     private float[] mProjMatrix = new float[16];
     private float[] mVMatrix = new float[16];
     private float[] eye;
@@ -52,9 +48,10 @@ public class WorldRender implements GLSurfaceView.Renderer {
                 0.6f, 0.8f, 0.6f,   // kd
                 0.5f, 0.5f, 0.5f,   // ks
         };
+
     }
 
-    public void addShape(final GLDrawable shape) {
+    public void addShape(final Model shape) {
         Log.i(TAG, "addShape");
         shapeList.add(shape);
         shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
@@ -62,7 +59,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         shape.setLight(light);
     }
 
-    public void remove(GLDrawable shape) {
+    public void remove(Model shape) {
         shapeList.remove(shape);
     }
 
@@ -81,7 +78,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
         GLES30.glEnable(GLES30.GL_CULL_FACE_MODE);
 
-        for (GLDrawable shape : shapeList) {
+        for (Model shape : shapeList) {
             shape.onSurfaceCreate(surfaceView.getContext());
         }
     }
@@ -95,7 +92,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         //眼睛坐标和法向量一定要算好 要不然 看到别的地方去了
         Matrix.setLookAtM(mVMatrix, 0, eye[0],eye[1],eye[2],0,0,0,0,0,-1);
         Matrix.perspectiveM(mProjMatrix, 0, 90, aspectRatio, 0.1f, 100);
-        for (GLDrawable shape : shapeList) {
+        for (Model shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
             shape.onSurfaceChange(width, height);
         }
@@ -106,7 +103,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
 
         Log.i(TAG, "onDrawFrame width: ");
-        for (GLDrawable shape : shapeList) {
+        for (Model shape : shapeList) {
             shape.onDraw();
         }
     }
@@ -130,7 +127,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         Matrix.rotateM(modelMatrix, 0, -rotateX / TOUCH_SCALE_AC, 0, 1, 0);
         Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
 
-        for (GLDrawable shape : shapeList) {
+        for (Model shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
         }
         surfaceView.requestRender();
@@ -140,7 +137,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         //这样写可以造成一个缩放回弹的效果 回弹效果要在scaleEnd时重新设置回边界大小
         Matrix.scaleM(modelMatrix, 0, s, s, s);
         scale = scale * s;
-        for (GLDrawable shape : shapeList) {
+        for (Model shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
         }
         surfaceView.requestRender();
@@ -160,7 +157,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         }
         Matrix.scaleM(modelMatrix, 0, s, s, s);
 
-        for (GLDrawable shape : shapeList) {
+        for (Model shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
         }
         surfaceView.requestRender();

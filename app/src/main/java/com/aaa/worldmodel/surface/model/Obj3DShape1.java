@@ -1,23 +1,20 @@
-package com.aaa.worldmodel.surface.obj;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.util.Log;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.twodimensional.ShaderUtil;
 import com.aaa.worldmodel.utils.LogUtils;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.List;
 
-public class Obj3DShape1 extends GLDrawable {
+public class Obj3DShape1 extends Model {
     private static final int LOCATION_POSITION = 0;
     private static final int LOCATION_COORDINATE = 1;
     private static final int LOCATION_NORMAL = 2;
@@ -26,9 +23,6 @@ public class Obj3DShape1 extends GLDrawable {
     private static final int LOCATION_KD = 5;
     private static final int LOCATION_KS = 6;
     private static final int LOCATION_TEXTURE = 7;
-    static int programId;
-    static String vertexShaderCode;
-    static String fragmentShaderCode;
     int r = 3;
     float angle = 0;
     float aspectRatio = 1;
@@ -53,12 +47,6 @@ public class Obj3DShape1 extends GLDrawable {
         }
     }
 
-    public static void initProgram(Context context) {
-        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj2.vert", context.getResources());
-        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj2.frag", context.getResources());
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
-    }
-
     @Override
     public void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix) {
 
@@ -66,7 +54,9 @@ public class Obj3DShape1 extends GLDrawable {
 
     @Override
     public void onSurfaceCreate(Context context) {
-
+        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj2.vert", context.getResources());
+        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj2.frag", context.getResources());
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override

@@ -1,45 +1,27 @@
-package com.aaa.worldmodel.surface.shape;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.twodimensional.ShaderUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
-public class Cube extends GLDrawable {
+public class Cube extends Model {
 
     private static final int LOCATION_VERTEX = 0;
     private static final int LOCATION_COLOR = 1;
     private static final int LOCATION_MATRIX = 2;
     private static final String TAG = Cube.class.getSimpleName();
 
-    protected static String vertexShaderCode = "# version 300 es \n" +
-            "layout (location = 0) in vec4 vPosition;" +
-            "layout (location = 1) in vec4 color;" +
-            "layout (location = 2) uniform mat4 u_Matrix;" +
-            "out vec4 fColor;" +
-            "void main() {" +
-            "     gl_Position  = u_Matrix * vPosition;" +
-            "     gl_PointSize = 100.0;" +
-            "     fColor = color;" +
-            "}";
-    protected static String fragmentShaderCode = "# version 300 es \n" +
-            "precision mediump float;" +
-            "out vec4 fragColor;" +
-            "in vec4 fColor;" +
-            "void main() {" +
-            "     fragColor = fColor;" +
-            "}";
 
     private final float[] mMatrix = new float[16];
     private final float[] mProjMatrix = new float[16];
     private final float[] mVMatrix = new float[16];
-    protected static int programId;
 
     private static final int VERTEX_SIZE = 3;
     private static final int COLOR_SIZE = 3;
@@ -81,7 +63,7 @@ public class Cube extends GLDrawable {
 
     @Override
     public void onSurfaceCreate(Context context) {
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override

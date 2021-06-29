@@ -7,7 +7,10 @@ package com.aaa.worldmodel.twodimensional;
 
 import android.content.res.Resources;
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.util.Log;
+
+import com.aaa.worldmodel.utils.LogUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -15,95 +18,7 @@ import java.io.InputStream;
 //加载顶点Shader与片元Shader的工具类
 public class ShaderUtil
 {
-    //加载制定shader的方法
-    public static int loadShader
-    (
-            int shaderType, //shader的类型  GLES20.GL_VERTEX_SHADER(顶点)   GLES20.GL_FRAGMENT_SHADER(片元)
-            String source   //shader的脚本字符串
-    )
-    {
-        //创建一个新shader
-        int shader = GLES20.glCreateShader(shaderType);
-        //若创建成功则加载shader
-        if (shader != 0)
-        {
-            //加载shader的源代码
-            GLES20.glShaderSource(shader, source);
-            //编译shader
-            GLES20.glCompileShader(shader);
-            //存放编译成功shader数量的数组
-            int[] compiled = new int[1];
-            //获取Shader的编译情况
-            GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
-            if (compiled[0] == 0)
-            {//若编译失败则显示错误日志并删除此shader
-                Log.e("ES20_ERROR", "Could not compile shader " + shaderType + ":");
-                Log.e("ES20_ERROR", GLES20.glGetShaderInfoLog(shader));
-                GLES20.glDeleteShader(shader);
-                shader = 0;
-            }
-        }
-        return shader;
-    }
-
-    //创建shader程序的方法
-    public static int createProgram(String vertexSource, String fragmentSource)
-    {
-        //加载顶点着色器
-        int vertexShader = loadShader(GLES20.GL_VERTEX_SHADER, vertexSource);
-        if (vertexShader == 0)
-        {
-            return 0;
-        }
-
-        //加载片元着色器
-        int pixelShader = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentSource);
-        if (pixelShader == 0)
-        {
-            return 0;
-        }
-
-        //创建程序
-        int program = GLES20.glCreateProgram();
-        //若程序创建成功则向程序中加入顶点着色器与片元着色器
-        if (program != 0)
-        {
-            //向程序中加入顶点着色器
-            GLES20.glAttachShader(program, vertexShader);
-            checkGlError("glAttachShader");
-            //向程序中加入片元着色器
-            GLES20.glAttachShader(program, pixelShader);
-            checkGlError("glAttachShader");
-            //链接程序
-            GLES20.glLinkProgram(program);
-            //存放链接成功program数量的数组
-            int[] linkStatus = new int[1];
-            //获取program的链接情况
-            GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);
-            //若链接失败则报错并删除程序
-            if (linkStatus[0] != GLES20.GL_TRUE)
-            {
-                Log.e("ES20_ERROR", "Could not link program: ");
-                Log.e("ES20_ERROR", GLES20.glGetProgramInfoLog(program));
-                GLES20.glDeleteProgram(program);
-                program = 0;
-            }
-        }
-        return program;
-    }
-
-    //检查每一步操作是否有错误的方法
-    public static void checkGlError(String op)
-    {
-        int error;
-        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR)
-        {
-            Log.e("ES20_ERROR", op + ": glError " + error);
-            throw new RuntimeException(op + ": glError " + error);
-        }
-    }
-
-    //从sh脚本中加载shader内容的方法
+    //从assert中加载shader内容的方法
     public static String loadFromAssetsFile(String fname,Resources r)
     {
         String result=null;
@@ -130,20 +45,86 @@ public class ShaderUtil
     }
 
 
-    public static final String vertexShaderCode =
-                    "uniform mat4 uMVPMatrix;"+
-                    "attribute vec4 aPosition;" +
-                    "attribute vec4 aColor;   "+    //顶点颜色
-                    "varying  vec4 vColor;  "+     //用于传递给片元着色器的变量
-                    "void main() {" +
-                    "   gl_Position = uMVPMatrix * aPosition;" +
-                    "   vColor = aColor;"+   //将接收的颜色传递给片元着色器
-                    "}";
+    public static int createProgram(String vertexShaderCode, String fragmentShaderCode) {
+        int vertexShaderId = compileShader(GLES30.GL_VERTEX_SHADER, vertexShaderCode);
+        int fragmentShaderId = compileShader(GLES30.GL_FRAGMENT_SHADER, fragmentShaderCode);
+        if (vertexShaderId == 0 || fragmentShaderId == 0) {
+            LogUtils.e( " shader id is 0  vertex :" + vertexShaderId + " color: " + fragmentShaderId);
+            return 0;
+        }
 
-    public static final String fragmentShaderCode =
-                    "precision mediump float;" +
-                    "varying vec4 vColor;" +  //接收从顶点着色器过来的参数
-                    "void main() {" +
-                    "  gl_FragColor = vColor;" +
-                    "}";
+        int programId = linkProgram(vertexShaderId, fragmentShaderId);
+        if (programId == 0) {
+            LogUtils.e( " program id is 0");
+            return 0;
+        }
+        return programId;
+    }
+    /**
+     * 链接小程序
+     *
+     * @param vertexShaderId   顶点着色器
+     * @param fragmentShaderId 片段着色器
+     * @return
+     */
+    private static int linkProgram(int vertexShaderId, int fragmentShaderId) {
+        final int programId = GLES30.glCreateProgram();
+        LogUtils.e( "linkProgram programId: " + programId);
+        if (programId != 0) {
+            //将顶点着色器加入到程序
+            GLES30.glAttachShader(programId, vertexShaderId);
+            //将片元着色器加入到程序中
+            GLES30.glAttachShader(programId, fragmentShaderId);
+            //链接着色器程序
+            GLES30.glLinkProgram(programId);
+            final int[] linkStatus = new int[1];
+            GLES30.glGetProgramiv(programId, GLES30.GL_LINK_STATUS, linkStatus, 0);
+            if (linkStatus[0] == 0) {
+                String logInfo = GLES30.glGetProgramInfoLog(programId);
+                LogUtils.e( "linkProgram err: " + logInfo);
+                GLES30.glDeleteProgram(programId);
+                return 0;
+            }
+            return programId;
+        } else {
+            //创建失败
+            return 0;
+        }
+    }
+
+    /**
+     * 编译
+     *
+     * @param type       顶点着色器:GLES30.GL_VERTEX_SHADER
+     *                   片段着色器:GLES30.GL_FRAGMENT_SHADER
+     * @param shaderCode
+     * @return
+     */
+    protected static int compileShader(int type, String shaderCode) {
+        //创建一个着色器
+        final int shaderId = GLES30.glCreateShader(type);
+        LogUtils.e( "glCreateShader : " + shaderId);
+        if (shaderId != 0) {
+            //加载到着色器
+            GLES30.glShaderSource(shaderId, shaderCode);
+            //编译着色器
+            GLES30.glCompileShader(shaderId);
+            //检测状态
+            final int[] compileStatus = new int[1];
+            GLES30.glGetShaderiv(shaderId, GLES30.GL_COMPILE_STATUS, compileStatus, 0);
+            if (compileStatus[0] == 0) {
+                String logInfo = GLES30.glGetShaderInfoLog(shaderId);
+                System.err.println(logInfo);
+                LogUtils.e( "compileShader : " + type + " " + logInfo);
+                //创建失败
+                GLES30.glDeleteShader(shaderId);
+                return 0;
+            }
+            return shaderId;
+        } else {
+            //创建失败
+            return 0;
+        }
+    }
+
 }

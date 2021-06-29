@@ -1,17 +1,16 @@
-package com.aaa.worldmodel.surface.obj;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.twodimensional.ShaderUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjModel extends GLDrawable {
-    static int programId;
+public class ObjModel extends Model {
     //模型放置到地图上时 本身需要做平移缩放旋转
     float scale = 1f;
     float offsetX = 0f;
@@ -40,8 +39,6 @@ public class ObjModel extends GLDrawable {
 
     private int LOCATION_EYE_POS;
 
-    private String vertexShaderCode;
-    private String fragmentShaderCode;
 
     private float[] modelMatrix = new float[16];
     private float[] mProjMatrix = new float[16];
@@ -109,7 +106,7 @@ public class ObjModel extends GLDrawable {
     public void onSurfaceCreate(Context context) {
         vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl.vert", context.getResources());
         fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj_mtl.frag", context.getResources());
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
 
         LOCATION_VETEX = GLES30.glGetAttribLocation(programId, "aPos");
         LOCATION_NORMAL = GLES30.glGetAttribLocation(programId, "aNormal");

@@ -1,24 +1,22 @@
-package com.aaa.worldmodel.surface.obj;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.surface.obj.Obj3D;
+import com.aaa.worldmodel.surface.obj.ObjReader;
 import com.aaa.worldmodel.twodimensional.ShaderUtil;
 import com.aaa.worldmodel.utils.LogUtils;
 
 import java.io.IOException;
 
-public class Obj3DShape extends GLDrawable {
+public class Obj3DShape extends Model {
     private static final int LOCATION_POSITION = 0;
     private static final int LOCATION_COORDINATE = 1;
     private static final int LOCATION_NORMAL = 2;
     private static final int LOCATION_MATRIX = 3;
     private static final int LOCATION_TEXTURE = 3;
-    static int programId;
-    static String vertexShaderCode;
-    static String fragmentShaderCode;
     public boolean temp;
     Obj3D obj;
     int r = 3;
@@ -51,11 +49,6 @@ public class Obj3DShape extends GLDrawable {
         }
     }
 
-    public static void initProgram(Context context) {
-        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj.vert", context.getResources());
-        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj.frag", context.getResources());
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
-    }
 
     @Override
     public void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix) {
@@ -64,7 +57,9 @@ public class Obj3DShape extends GLDrawable {
 
     @Override
     public void onSurfaceCreate(Context context) {
-
+        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj.vert", context.getResources());
+        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/obj.frag", context.getResources());
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override

@@ -1,16 +1,13 @@
-package com.aaa.worldmodel.surface.obj;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.opengl.GLES30;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.surface.obj.Path3D;
 import com.aaa.worldmodel.twodimensional.ShaderUtil;
 
-public class PathDrawable extends GLDrawable {
+public class PathDrawable extends Model {
 
-    static int programId;
-    private String vertexShaderCode;
-    private String fragmentShaderCode;
     private float[] modelMatrix = new float[16];
     private float[] mProjMatrix = new float[16];
     private float[] mVMatrix = new float[16];
@@ -37,7 +34,7 @@ public class PathDrawable extends GLDrawable {
     public void onSurfaceCreate(Context context) {
         vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/path.vert", context.getResources());
         fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/path.frag", context.getResources());
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override

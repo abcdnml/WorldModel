@@ -1,18 +1,18 @@
-package com.aaa.worldmodel.surface.shape;
+package com.aaa.worldmodel.surface.model;
 
 import android.content.Context;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.aaa.worldmodel.surface.GLDrawable;
+import com.aaa.worldmodel.twodimensional.ShaderUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 
-public class Triangle extends GLDrawable {
+public class Triangle extends Model {
 
     private static final String TAG = Triangle.class.getSimpleName();
 
@@ -22,24 +22,6 @@ public class Triangle extends GLDrawable {
 
     private static final int VERTEX_SIZE = 3;
     private static final int COLOR_SIZE = 3;
-    protected static String vertexShaderCode = "# version 300 es \n" +
-            "layout (location = 0) in vec4 vPosition;" +
-            "layout (location = 1) in vec4 color;" +
-            "layout (location = 2) uniform mat4 u_Matrix;" +
-            "out vec4 fColor;" +
-            "void main() {" +
-            "     gl_Position  = u_Matrix * vPosition;" +
-            "     gl_PointSize = 100.0;" +
-            "     fColor = color;" +
-            "}";
-    protected static String fragmentShaderCode = "# version 300 es \n" +
-            "precision mediump float;" +
-            "out vec4 fragColor;" +
-            "in vec4 fColor;" +
-            "void main() {" +
-            "     fragColor = fColor;" +
-            "}";
-    protected static int programId;
     private final float[] mMatrix = new float[16];
     private final float[] mProjMatrix = new float[16];
     private final float[] mVMatrix = new float[16];
@@ -97,7 +79,9 @@ public class Triangle extends GLDrawable {
 
     @Override
     public void onSurfaceCreate(Context context) {
-        programId = createGLProgram(vertexShaderCode, fragmentShaderCode);
+        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/triangle.vert", context.getResources());
+        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/triangle.frag", context.getResources());
+        programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
     @Override
