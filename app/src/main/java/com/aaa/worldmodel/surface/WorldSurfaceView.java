@@ -42,4 +42,13 @@ public class WorldSurfaceView extends GLSurfaceView  {
         return renderer;
     }
 
+    /**
+     * 设置背景颜色
+     * @param color
+     */
+    public void setBackgroundColor(int color){
+        renderer.setBackgroundColor(color);
+        requestRender();
+    }
+
 }
