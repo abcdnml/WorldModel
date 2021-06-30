@@ -4,7 +4,7 @@ import android.content.Context;
 import android.opengl.GLES30;
 
 import com.aaa.worldmodel.surface.obj.Path3D;
-import com.aaa.worldmodel.twodimensional.ShaderUtil;
+import com.aaa.worldmodel.utils.ShaderUtil;
 
 public class PathDrawable extends Model {
 

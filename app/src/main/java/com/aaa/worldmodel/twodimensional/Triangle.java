@@ -3,6 +3,8 @@ package com.aaa.worldmodel.twodimensional;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.aaa.worldmodel.utils.ShaderUtil;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -81,19 +83,13 @@ public class Triangle
     //初始化shader
     public void initShader(TwoDimensionalView mv)
     {
-        //加载顶点着色器的脚本内容
-//        mVertexShader=ShaderUtil.loadFromAssetsFile("vertex.sh", mv.getResources());
-        mVertexShader=ShaderUtil.vertexShaderCode;
-        //加载片元着色器的脚本内容
-//        mFragmentShader=ShaderUtil.loadFromAssetsFile("frag.sh", mv.getResources());
-        mFragmentShader=ShaderUtil.fragmentShaderCode;
-        //基于顶点着色器与片元着色器创建程序
+        mVertexShader= ShaderUtil.loadFromAssetsFile("triangle.vert", mv.getResources());
+        mFragmentShader=ShaderUtil.loadFromAssetsFile("triangle.frag", mv.getResources());
+
         mProgram = ShaderUtil.createProgram(mVertexShader, mFragmentShader);
-        //获取程序中顶点位置属性引用id
+
         maPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
-        //获取程序中顶点颜色属性引用id
         maColorHandle= GLES20.glGetAttribLocation(mProgram, "aColor");
-        //获取程序中总变换矩阵引用id
         muMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
     }
 
@@ -108,29 +104,12 @@ public class Triangle
         //设置绕x轴旋转
         Matrix.rotateM(mMMatrix,0,xAngle,0,0,1);
         //
-        GLES20.glUniformMatrix4fv(muMVPMatrixHandle,
-                1, false, Triangle.getFianlMatrix(mMMatrix), 0);
+        GLES20.glUniformMatrix4fv(muMVPMatrixHandle,1, false, Triangle.getFianlMatrix(mMMatrix), 0);
         //为画笔指定顶点位置数据
-        GLES20.glVertexAttribPointer(
-                maPositionHandle,
-                3,
-                GLES20.GL_FLOAT,
-                false,
-                3*4,
-                mVertexBuffer
-        );
-        GLES20.glVertexAttribPointer
-                (
-                        maColorHandle,
-                        4,
-                        GLES20.GL_FLOAT,
-                        false,
-                        4*4,
-                        mColorBuffer
-                );
-        //允许顶点位置数据数组
         GLES20.glEnableVertexAttribArray(maPositionHandle);
+        GLES20.glVertexAttribPointer(maPositionHandle,3,GLES20.GL_FLOAT,false,3*4,mVertexBuffer);
         GLES20.glEnableVertexAttribArray(maColorHandle);
+        GLES20.glVertexAttribPointer(maColorHandle,4, GLES20.GL_FLOAT,false,4*4,mColorBuffer);
         //绘制三角形
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vCount);
     }

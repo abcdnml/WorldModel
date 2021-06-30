@@ -6,7 +6,7 @@ import android.opengl.Matrix;
 
 import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.surface.obj.ObjReader;
-import com.aaa.worldmodel.twodimensional.ShaderUtil;
+import com.aaa.worldmodel.utils.ShaderUtil;
 import com.aaa.worldmodel.utils.LogUtils;
 
 import java.io.IOException;

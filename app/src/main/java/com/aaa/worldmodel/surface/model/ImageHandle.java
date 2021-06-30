@@ -8,7 +8,7 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
 import com.aaa.worldmodel.utils.LogUtils;
-import com.aaa.worldmodel.twodimensional.ShaderUtil;
+import com.aaa.worldmodel.utils.ShaderUtil;
 
 import java.nio.FloatBuffer;
 

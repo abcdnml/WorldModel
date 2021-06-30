@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.aaa.worldmodel.surface.WorldRender;
 import com.aaa.worldmodel.surface.WorldSurfaceView;
 import com.aaa.worldmodel.surface.map.MapDataConverter;
+import com.aaa.worldmodel.surface.model.TestModel;
 import com.aaa.worldmodel.surface.obj.Obj3D;
 import com.aaa.worldmodel.surface.model.Obj3DShape;
 import com.aaa.worldmodel.surface.model.Obj3DShape1;
@@ -51,12 +52,13 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics metrics = new DisplayMetrics();
         getDisplay().getRealMetrics(metrics);
         Log.i("aaaaaaaaaa", " metrics.densityDpi " + metrics.densityDpi + "density : " + metrics.density);
+
         worldSurfaceView = findViewById(R.id.sv_world);
         worldRender = worldSurfaceView.getRenderer();
 //        addTriangle();
 //        addCircle();
 //        addCone();
-//        addCube();
+        addCube1(0,0,0);
 //        addColorfulCube();
 //        addColumn();
 //        addGlobe();
@@ -64,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
 //        addTexture2DEffect();
 //        add3DObj();
 //        addMulti3DObj();
-        test3D();
-        map();
+//        test3D();
+//        map();
     }
 
     public void addTriangle() {
@@ -375,6 +377,42 @@ public class MainActivity extends AppCompatActivity {
         };
 
         Cube cube = new Cube(this, cubeVertex, index, color);
+
+        worldRender.addShape(cube);
+    }
+
+    public void addCube1(float offsetX,float offsetY,float offsetZ) {
+        final float UNIT_SIZE = 0.5f;
+        float[] cubeVertex = new float[]{
+                -UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 左 上
+                UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 右 上
+                UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 右 下
+                -UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 左 下
+                -UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 左 上
+                UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 右 上
+                UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 右 下
+                -UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 左 下
+        };
+        int[] index = new int[]{
+                0, 1, 2, 0, 2, 3,//正面两个三角形
+                4, 5, 6, 4, 6, 7,//背面
+                0, 4, 7, 0, 7, 3,//左侧
+                1, 5, 6, 1, 6, 2, //右侧
+                0, 1, 5, 0, 4, 5,//上
+                3, 2, 6, 3, 7, 6
+        };
+        float[] color = new float[]{
+                1, 0, 0,
+                0, 1, 0,
+                0, 0, 1,
+                0, 0, 0,
+                1, 1, 1,
+                1, 1, 0,
+                0, 1, 1,
+                1, 0, 1
+        };
+
+        TestModel cube = new TestModel(this, cubeVertex, index, color);
 
         worldRender.addShape(cube);
     }

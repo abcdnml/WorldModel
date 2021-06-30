@@ -5,7 +5,7 @@ import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.aaa.worldmodel.twodimensional.ShaderUtil;
+import com.aaa.worldmodel.utils.ShaderUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

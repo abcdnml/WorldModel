@@ -5,7 +5,7 @@ import android.opengl.GLES30;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.aaa.worldmodel.twodimensional.ShaderUtil;
+import com.aaa.worldmodel.utils.ShaderUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -63,6 +63,8 @@ public class Cube extends Model {
 
     @Override
     public void onSurfaceCreate(Context context) {
+        vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/triangle.vert", context.getResources());
+        fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/triangle.frag", context.getResources());
         programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 

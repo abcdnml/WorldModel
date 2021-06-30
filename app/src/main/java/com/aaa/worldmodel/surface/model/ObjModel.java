@@ -5,7 +5,7 @@ import android.opengl.GLES30;
 import android.opengl.Matrix;
 
 import com.aaa.worldmodel.surface.obj.Obj3D;
-import com.aaa.worldmodel.twodimensional.ShaderUtil;
+import com.aaa.worldmodel.utils.ShaderUtil;
 
 import java.util.ArrayList;
 import java.util.List;
