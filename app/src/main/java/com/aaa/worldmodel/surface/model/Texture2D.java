@@ -18,17 +18,16 @@ public class Texture2D extends Model {
     private static final int LOCATION_MATRIX = 2;
     private static final int LOCATION_TEXTURE = 3;
     private static final String TAG = Texture2D.class.getSimpleName();
-
     private final float[] mMatrix = new float[16];
-    private final float[] mProjMatrix = new float[16];
-    private final float[] mVMatrix = new float[16];
-
-    private static final int VERTEX_SIZE = 2;
-    private static final int COLOR_SIZE = 2;
-
+    private final float[] pMatrix = new float[16];
+    private final float[] vMatrix = new float[16];
+    private final float[] mvpMatrix = new float[16];
+    private final float[] tempMatrix = new float[16];
     protected Bitmap mBitmap;
+    int vao[] = new int[1];
+    private int textureId;
 
-    public Texture2D(Context context,Bitmap bitmap, float[] vertex, float[] textureCoordinate) {
+    public Texture2D(Context context, Bitmap bitmap, float[] vertex, float[] textureCoordinate) {
         super(context);
         vertexShaderCode = "# version 300 es \n" +
                 "layout (location = 0) in vec4 vPosition;\n" +
@@ -67,15 +66,19 @@ public class Texture2D extends Model {
         colorBuffer.flip();
     }
 
-
     @Override
-    public void setMatrix(float[] mMatrix, float[] vMatrix,float[] pMatrix) {
-
+    public void setMatrix(float[] mMatrix, float[] vMatrix, float[] pMatrix) {
+        System.arraycopy(mMatrix, 0, this.mMatrix, 0, mMatrix.length);
+        System.arraycopy(vMatrix, 0, this.vMatrix, 0, vMatrix.length);
+        System.arraycopy(pMatrix, 0, this.pMatrix, 0, pMatrix.length);
+        conbineMatrix();
     }
 
     @Override
     public void onSurfaceCreate(Context context) {
         programId = ShaderUtil.createProgram(vertexShaderCode, fragmentShaderCode);
+        textureId = createTexture();
+        initVAO();
     }
 
     @Override
@@ -86,35 +89,68 @@ public class Texture2D extends Model {
         }
         Log.i(TAG, "onDrawFrame texture programId: " + programId);
         GLES30.glUseProgram(programId);
+//        drawNormaly();
+        drawVAO();
 
+    }
+
+    private void drawNormaly() {
         GLES30.glEnableVertexAttribArray(LOCATION_VERTEX);
         GLES30.glEnableVertexAttribArray(LOCATION_COLOR);
 
         GLES30.glUniformMatrix4fv(LOCATION_MATRIX, 1, false, mMatrix, 0);
 
         GLES30.glUniform1i(LOCATION_TEXTURE, 0);
-        int textureId = createTexture();
-        //激活纹理
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
-        //绑定纹理
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId);
 
-
-        GLES30.glVertexAttribPointer(LOCATION_VERTEX, VERTEX_SIZE, GLES30.GL_FLOAT, false, FLOAT_SIZE * VERTEX_SIZE, vertexBuffer);
-        GLES30.glVertexAttribPointer(LOCATION_COLOR, COLOR_SIZE, GLES30.GL_FLOAT, false, FLOAT_SIZE * COLOR_SIZE, colorBuffer);
+        GLES30.glVertexAttribPointer(LOCATION_VERTEX, 3, GLES30.GL_FLOAT, false, 3 * 4, vertexBuffer);
+        GLES30.glVertexAttribPointer(LOCATION_COLOR, 2, GLES30.GL_FLOAT, false, 2 * 4, colorBuffer);
 
         GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
+    }
 
-        GLES30.glDisableVertexAttribArray(LOCATION_VERTEX);
-        GLES30.glDisableVertexAttribArray(LOCATION_COLOR);
+    private void initVAO() {
+
+        GLES30.glGenVertexArrays(1, vao, 0);
+        int[] vbo = new int[2];
+        GLES30.glGenBuffers(2, vbo, 0);
+
+        GLES30.glBindVertexArray(vao[0]);
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo[0]);
+        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexBuffer.capacity() * 4, vertexBuffer, GLES30.GL_STATIC_DRAW);
+        GLES30.glVertexAttribPointer(LOCATION_VERTEX, 3, GLES30.GL_FLOAT, false, 3 * 4, 0);
+        GLES30.glEnableVertexAttribArray(LOCATION_VERTEX);
+
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo[1]);
+        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, colorBuffer.capacity() * 4, colorBuffer, GLES30.GL_STATIC_DRAW);
+        GLES30.glVertexAttribPointer(LOCATION_COLOR, 2, GLES30.GL_FLOAT, false, 2 * 4, 0);
+        GLES30.glEnableVertexAttribArray(LOCATION_COLOR);
+
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId);
+
+        GLES30.glBindVertexArray(0);
 
     }
 
+    private void drawVAO() {
+        GLES30.glUniformMatrix4fv(LOCATION_MATRIX, 1, false, mvpMatrix, 0);
+        GLES30.glUniform1i(LOCATION_TEXTURE, 0);
+
+
+        GLES30.glBindVertexArray(vao[0]);
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, 4);
+//        GLES30.glDrawElements(GLES30.GL_TRIANGLE_STRIP, 4, GLES30.GL_UNSIGNED_INT, 0);
+        GLES30.glBindVertexArray(0);
+    }
+
+
     @Override
     public void onSurfaceChange(int width, int height) {
-        int w = mBitmap.getWidth();
+/*        int w = mBitmap.getWidth();
         int h = mBitmap.getHeight();
-        Log.e(TAG, "onSurfaceChange w: " + w+" h: "+h);
+        Log.e(TAG, "onSurfaceChange w: " + w + " h: " + h);
         float sWH = w / (float) h;
         float sWidthHeight = width / (float) height;
         if (width > height) {
@@ -131,9 +167,9 @@ public class Texture2D extends Model {
             }
         }
         //设置相机位置
-         Matrix.setLookAtM(mVMatrix, 0, 0, 0, 3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(mVMatrix, 0, 0, 0, 3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
         //计算变换矩阵
-        Matrix.multiplyMM(mMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+        Matrix.multiplyMM(mMatrix, 0, mProjMatrix, 0, mVMatrix, 0);*/
 
 
 //        Matrix.frustumM(mProjMatrix, 0, -sWidthHeight, sWidthHeight, -1, 1, 1, 10);//调用此方法计算产生透视投影矩阵
@@ -143,13 +179,17 @@ public class Texture2D extends Model {
 
     }
 
+    private void conbineMatrix() {
+        Matrix.multiplyMM(tempMatrix, 0, pMatrix, 0, vMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, tempMatrix, 0, mMatrix, 0);
+    }
+
     private int createTexture() {
         int[] texture = new int[1];
         if (mBitmap != null && !mBitmap.isRecycled()) {
             //生成纹理ID
             GLES30.glGenTextures(1, texture, 0);
             Log.e(TAG, "glGenTextures : " + texture[0]);
-
             //绑定纹理ID
             GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture[0]);
 

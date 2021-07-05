@@ -391,10 +391,6 @@ public class MapDataConverter {
         UNIT_SIZE = resolution * 2;
 
         for (int i = 0; i < path.size() / 2; i++) {
-//        xx[i] = int(path_xx[i + 4] / 5.0 - x0 * 20);
-//        yy[i] = int(path_yy[i + 4] / 5.0 - y0 * 20);
-//        xxx[i] = (width - yy[i]);
-//        yyy[i] = (height - xx[i]);
             float x = width - (path.get(i * 2 + 1) / 5 - y_min * 20); //计算方式就是这样 别问为什么
             float z = height - (path.get(i * 2) / 5 - x_min * 20);
 

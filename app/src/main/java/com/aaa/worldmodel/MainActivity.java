@@ -13,18 +13,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.aaa.worldmodel.surface.WorldRender;
 import com.aaa.worldmodel.surface.WorldSurfaceView;
 import com.aaa.worldmodel.surface.map.MapDataConverter;
-import com.aaa.worldmodel.surface.model.TestModel;
-import com.aaa.worldmodel.surface.obj.Obj3D;
+import com.aaa.worldmodel.surface.model.Cube;
+import com.aaa.worldmodel.surface.model.ImageHandle;
 import com.aaa.worldmodel.surface.model.Obj3DShape;
 import com.aaa.worldmodel.surface.model.Obj3DShape1;
-import com.aaa.worldmodel.surface.obj.ObjReader;
 import com.aaa.worldmodel.surface.model.ObjModel;
-import com.aaa.worldmodel.surface.obj.Path3D;
 import com.aaa.worldmodel.surface.model.PathDrawable;
-import com.aaa.worldmodel.surface.model.Cube;
-import com.aaa.worldmodel.surface.model.Triangle;
-import com.aaa.worldmodel.surface.model.ImageHandle;
+import com.aaa.worldmodel.surface.model.TestModel;
 import com.aaa.worldmodel.surface.model.Texture2D;
+import com.aaa.worldmodel.surface.model.Triangle;
+import com.aaa.worldmodel.surface.obj.Obj3D;
+import com.aaa.worldmodel.surface.obj.ObjReader;
+import com.aaa.worldmodel.surface.obj.Path3D;
 import com.aaa.worldmodel.utils.LogUtils;
 import com.google.gson.Gson;
 
@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity {
 //        addTriangle();
 //        addCircle();
 //        addCone();
-        addCube1(0,0,0);
+//        addCube1(0,0,0);
 //        addColorfulCube();
 //        addColumn();
 //        addGlobe();
-//        addTexture2D();
+        addTexture2D();
 //        addTexture2DEffect();
 //        add3DObj();
 //        addMulti3DObj();
@@ -74,15 +74,15 @@ public class MainActivity extends AppCompatActivity {
         final float UNIT_SIZE = 0.2f;
         float[] vertex = new float[]{
                 0, 0, 0,
-                - UNIT_SIZE,  UNIT_SIZE, 0,
-                0,  UNIT_SIZE, 0,
-                 UNIT_SIZE,  UNIT_SIZE, 0,
-                 UNIT_SIZE, 0, 0,
-                 UNIT_SIZE, - UNIT_SIZE, 0,
-                0, - UNIT_SIZE, 0,
-                - UNIT_SIZE, - UNIT_SIZE, 0,
-                - UNIT_SIZE, 0, 0,
-                - UNIT_SIZE,  UNIT_SIZE, 0,
+                -UNIT_SIZE, UNIT_SIZE, 0,
+                0, UNIT_SIZE, 0,
+                UNIT_SIZE, UNIT_SIZE, 0,
+                UNIT_SIZE, 0, 0,
+                UNIT_SIZE, -UNIT_SIZE, 0,
+                0, -UNIT_SIZE, 0,
+                -UNIT_SIZE, -UNIT_SIZE, 0,
+                -UNIT_SIZE, 0, 0,
+                -UNIT_SIZE, UNIT_SIZE, 0,
         };
         float[] color = new float[]{
                 1, 1, 1,
@@ -345,17 +345,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void addCube(float offsetX,float offsetY,float offsetZ) {
+    public void addCube(float offsetX, float offsetY, float offsetZ) {
         final float UNIT_SIZE = 0.1f;
         float[] cubeVertex = new float[]{
-                -UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 左 上
-                UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 右 上
-                UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 右 下
-                -UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 左 下
-                -UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 左 上
-                UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 右 上
-                UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 右 下
-                -UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 左 下
+                -UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 左 上
+                UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 右 上
+                UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 右 下
+                -UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 左 下
+                -UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 左 上
+                UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 右 上
+                UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 右 下
+                -UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 左 下
         };
         int[] index = new int[]{
                 0, 1, 2, 0, 2, 3,//正面两个三角形
@@ -381,17 +381,17 @@ public class MainActivity extends AppCompatActivity {
         worldRender.addShape(cube);
     }
 
-    public void addCube1(float offsetX,float offsetY,float offsetZ) {
+    public void addCube1(float offsetX, float offsetY, float offsetZ) {
         final float UNIT_SIZE = 0.5f;
         float[] cubeVertex = new float[]{
-                -UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 左 上
-                UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 右 上
-                UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 右 下
-                -UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, UNIT_SIZE+offsetZ,//前 左 下
-                -UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 左 上
-                UNIT_SIZE+offsetX, UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 右 上
-                UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 右 下
-                -UNIT_SIZE+offsetX, -UNIT_SIZE+offsetY, -UNIT_SIZE+offsetZ,//后 左 下
+                -UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 左 上
+                UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 右 上
+                UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 右 下
+                -UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, UNIT_SIZE + offsetZ,//前 左 下
+                -UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 左 上
+                UNIT_SIZE + offsetX, UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 右 上
+                UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 右 下
+                -UNIT_SIZE + offsetX, -UNIT_SIZE + offsetY, -UNIT_SIZE + offsetZ,//后 左 下
         };
         int[] index = new int[]{
                 0, 1, 2, 0, 2, 3,//正面两个三角形
@@ -523,10 +523,10 @@ public class MainActivity extends AppCompatActivity {
     public void addTexture2D() {
         //顶点坐标
         float[] sPos = {
-                -1.0f, 1.0f,    //左上角
-                -1.0f, -1.0f,   //左下角
-                1.0f, 1.0f,     //右上角
-                1.0f, -1.0f     //右下角
+                -1.0f, 1.0f, 0f,    //左上角
+                -1.0f, -1.0f, 0f,   //左下角
+                1.0f, 1.0f, 0f,     //右上角
+                1.0f, -1.0f, 0f,     //右下角
         };
 
         //纹理坐标
@@ -611,22 +611,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void test3D() {
-        List<Obj3D> multiObj2 = ObjReader.readMultiObj(this, "assets/obj/床头柜.obj");
-        float modelStride=200;  //顶点跨度范围  要将其缩小到 真实大小0.5 也对应坐标系里的0.5
-        LogUtils.i("obj size : "+ multiObj2.size());
+        List<Obj3D> multiObj2 = ObjReader.readMultiObj(this, "assets/obj/3d户型.obj");
+        float modelStride = 200;  //顶点跨度范围  要将其缩小到 真实大小0.5 也对应坐标系里的0.5
+        LogUtils.i("obj size : " + multiObj2.size());
         ObjModel objModel = new ObjModel(this, multiObj2);
-        objModel.setOffset(MapDataConverter.convertOffset(162),MapDataConverter.convertOffset(2)+0.2f,0);
-        objModel.setRotate(0,0,0);
-        objModel.setScale(MapDataConverter.calculateModelScale(0.5f,modelStride));
-//        worldRender.addShape(objModel);
-
+        objModel.setOffset(MapDataConverter.convertOffset(0), MapDataConverter.convertOffset(0) + 0.2f, 0);
+        objModel.setRotate(0, 0, 0);
+        objModel.setScale(1f);
+        worldRender.addShape(objModel);
+/*
         multiObj2 = ObjReader.readMultiObj(this, "assets/obj/扫地机器人.obj");
         modelStride=3000;  //顶点跨度范围  要将其缩小到 真实大小0.5 也对应坐标系里的0.5
         objModel = new ObjModel(this, multiObj2);
         objModel.setOffset(MapDataConverter.convertOffset(2),MapDataConverter.convertOffset(2)+0.2f,0);
         objModel.setRotate(0,0,0);
-        objModel.setScale(MapDataConverter.calculateModelScale(0.3f,modelStride));
-        worldRender.addShape(objModel);
+        objModel.setScale(MapDataConverter.calculateModelScale(1f,modelStride));
+        worldRender.addShape(objModel);*/
 
     }
 
@@ -637,21 +637,14 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < ldMapBean.baseMapData.length(); i++) {
             mapdata[i] = ldMapBean.baseMapData.charAt(i) - '0';
         }
+        Path3D path3D = MapDataConverter.convertPathData(ldMapBean.width, ldMapBean.height, ldMapBean.resolution, ldMapBean.x_min, ldMapBean.y_min, ldMapBean.path);
+        PathDrawable pathDrawable = new PathDrawable(this, path3D);
+        worldRender.addShape(pathDrawable);
 
         List<Obj3D> obj3D = MapDataConverter.mapDataToObj(ldMapBean.width, ldMapBean.height, mapdata, ldMapBean.resolution);
         ObjModel map = new ObjModel(this, obj3D);
         worldRender.addShape(map);
 
-        for (int i = 0; i < ldMapBean.path.size() / 2; i++) {
-            float x =ldMapBean.width - (ldMapBean.path.get(i * 2 + 1) / 5 - ldMapBean.y_min * 20); //计算方式就是这样 别问为什么
-            float z = ldMapBean.height - (ldMapBean.path.get(i * 2) / 5 - ldMapBean.x_min * 20);
-
-
-        }
-
-        Path3D path3D=MapDataConverter.convertPathData(ldMapBean.width,ldMapBean.height,ldMapBean.resolution,ldMapBean.x_min,ldMapBean.y_min,ldMapBean.path);
-        PathDrawable pathDrawable=new PathDrawable(this,path3D);
-        worldRender.addShape(pathDrawable);
 
     }
 

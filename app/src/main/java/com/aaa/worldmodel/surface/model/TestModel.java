@@ -71,7 +71,7 @@ public class TestModel extends Model {
         LOCATION_COLOR = GLES20.glGetAttribLocation(programId, "aColor");
         LOCATION_MATRIX = GLES20.glGetUniformLocation(programId, "uMVPMatrix");
 
-//        initVBO();
+        initVBO();
 //        initVAO();
 
     }
@@ -79,37 +79,43 @@ public class TestModel extends Model {
     @Override
     public void onDraw() {
         if (programId == 0) {
-            Log.e(TAG, "Program id is 0 ,may not init");
+            LogUtils.e( "Program id is 0 ,may not init");
             return;
         }
-        Log.i(TAG, "onDrawFrame  programId: " + programId);
+        LogUtils.i("onDraw cube  programId: " + programId);
         GLES30.glUseProgram(programId);
 
         GLES30.glUniformMatrix4fv(LOCATION_MATRIX, 1, false, mvpMatrix, 0);
 
 
-        drawNormaly();
+//        drawNormaly();
 
-//        drawWithVBO();
+        drawWithVBO();
 
 //        drawWithVAO();
-
+        drawLine();
     }
 
     private void drawNormaly() {
         GLES30.glEnableVertexAttribArray(LOCATION_VERTEX);
-        GLES30.glVertexAttribPointer(LOCATION_VERTEX, VERTEX_SIZE, GLES30.GL_FLOAT, false, FLOAT_SIZE * VERTEX_SIZE, vertexBuffer);
+        GLES30.glVertexAttribPointer(LOCATION_VERTEX, VERTEX_SIZE, GLES30.GL_FLOAT, false, 0/*FLOAT_SIZE * VERTEX_SIZE*/, vertexBuffer);
         GLES30.glEnableVertexAttribArray(LOCATION_COLOR);
-        GLES30.glVertexAttribPointer(LOCATION_COLOR, COLOR_SIZE, GLES30.GL_FLOAT, false, FLOAT_SIZE * COLOR_SIZE, colorBuffer);
+        GLES30.glVertexAttribPointer(LOCATION_COLOR, COLOR_SIZE, GLES30.GL_FLOAT, false, 0/*FLOAT_SIZE * COLOR_SIZE*/, colorBuffer);
 
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, indexBuffer.capacity()/2, GLES30.GL_UNSIGNED_INT, indexBuffer);
 //        GLES30.glDrawArrays(GLES30.GL_TRIANGLE_FAN, 0,vertexBuffer.capacity()/3);
-
-        GLES30.glDisableVertexAttribArray(LOCATION_VERTEX);
-        GLES30.glDisableVertexAttribArray(LOCATION_COLOR);
     }
 
-    private void  initVBO(){
+    private void drawLine(){
+        GLES30.glLineWidth(4);
+        GLES30.glEnableVertexAttribArray(LOCATION_VERTEX);
+        GLES30.glVertexAttribPointer(LOCATION_VERTEX, VERTEX_SIZE, GLES30.GL_FLOAT, false, 0/*FLOAT_SIZE * VERTEX_SIZE*/, vertexBuffer);
+        GLES30.glEnableVertexAttribArray(LOCATION_COLOR);
+        GLES30.glVertexAttribPointer(LOCATION_COLOR, COLOR_SIZE, GLES30.GL_FLOAT, false, 0/*FLOAT_SIZE * COLOR_SIZE*/, colorBuffer);
+        GLES30.glDrawArrays(GLES30.GL_LINE_LOOP,0,indexBuffer.capacity()/3);
+    }
+
+    private void initVBO(){
         GLES30.glGenBuffers(3, vbo, 0);
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo[0]);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexBuffer.capacity() * 4, vertexBuffer, GLES30.GL_STATIC_DRAW);
@@ -138,8 +144,6 @@ public class TestModel extends Model {
         GLES30.glBindVertexArray(vao[0]);
 
         GLES30.glGenBuffers(3, vbo, 0);
-
-        GLES30.glBindVertexArray(vao[0]);
 
         GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, vbo[0]);
         GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vertexBuffer.capacity() * 4, vertexBuffer, GLES30.GL_STATIC_DRAW);
