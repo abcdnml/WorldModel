@@ -29,7 +29,7 @@ public class TouchHandler {
 //                mapView.translate(distanceX,distanceY);
 
 
-                mapView.getRenderer().rotate(distanceX, distanceY);
+                mapView.getRenderer().rotateWorld(distanceX, distanceY);
                 return true;
             }
         });

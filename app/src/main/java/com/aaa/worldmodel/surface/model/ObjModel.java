@@ -71,9 +71,7 @@ public class ObjModel extends Model {
 
     @Override
     public void setMatrix(float[] mMatrix, float[] vMatrix, float[] pMatrix) {
-        System.arraycopy(mMatrix, 0, modelMatrix, 0, mMatrix.length);
-        System.arraycopy(vMatrix, 0, mVMatrix, 0, vMatrix.length);
-        System.arraycopy(pMatrix, 0, mProjMatrix, 0, pMatrix.length);
+        super.setMatrix(mMatrix,vMatrix,pMatrix);
 
         Matrix.translateM(modelMatrix, 0, offsetX, offsetY, offsetZ);
 

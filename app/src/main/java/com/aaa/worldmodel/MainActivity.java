@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.SeekBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +21,7 @@ import com.aaa.worldmodel.surface.model.Obj3DShape;
 import com.aaa.worldmodel.surface.model.Obj3DShape1;
 import com.aaa.worldmodel.surface.model.ObjModel;
 import com.aaa.worldmodel.surface.model.PathDrawable;
+import com.aaa.worldmodel.surface.model.SkyBoxModel;
 import com.aaa.worldmodel.surface.model.TestModel;
 import com.aaa.worldmodel.surface.model.Texture2D;
 import com.aaa.worldmodel.surface.model.Triangle;
@@ -44,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
     private static WorldRender worldRender;
     private WorldSurfaceView worldSurfaceView;
     private Handler handler = new Handler();
+    private SeekBar sb_x;
+    private SeekBar sb_y;
+    private SeekBar sb_z;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,58 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics metrics = new DisplayMetrics();
         getDisplay().getRealMetrics(metrics);
         Log.i("aaaaaaaaaa", " metrics.densityDpi " + metrics.densityDpi + "density : " + metrics.density);
+
+        sb_x=findViewById(R.id.sb_rotateX);
+        sb_x.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+//                worldRender.ro
+            }
+        });
+        sb_y=findViewById(R.id.sb_rotateY);
+        sb_y.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        sb_z=findViewById(R.id.sb_rotateZ);
+        sb_z.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         worldSurfaceView = findViewById(R.id.sv_world);
         worldRender = worldSurfaceView.getRenderer();
@@ -62,12 +120,13 @@ public class MainActivity extends AppCompatActivity {
 //        addColorfulCube();
 //        addColumn();
 //        addGlobe();
-        addTexture2D();
+//        addTexture2D();
 //        addTexture2DEffect();
 //        add3DObj();
 //        addMulti3DObj();
 //        test3D();
 //        map();
+        addSkyBox();
     }
 
     public void addTriangle() {
@@ -417,6 +476,11 @@ public class MainActivity extends AppCompatActivity {
         worldRender.addShape(cube);
     }
 
+    public  void addSkyBox(){
+        SkyBoxModel skyBoxModel=new SkyBoxModel(this);
+        worldRender.addShape(skyBoxModel);
+    }
+
     public void addColorfulCube() {
         final float UNIT_SIZE = 0.8f;
         //立方体每个角拆成3个点 三个点分别不同颜色 后面的数字是指这个点 用在那个面上
@@ -663,4 +727,45 @@ public class MainActivity extends AppCompatActivity {
         LogUtils.ls(tmp);
         return tmp;
     }
+
+    float distance=0.3f;
+    public void moveUp(View view) {
+        worldRender.move(0,distance,0);
+    }
+
+    public void moveLeft(View view) {
+        worldRender.move(-distance,0,0);
+    }
+
+    public void moveFront(View view) {
+        worldRender.move(0,0,-distance);
+    }
+
+    public void moveBack(View view) {
+        worldRender.move(0,0,distance);
+    }
+
+    public void moveRight(View view) {
+        worldRender.move(distance,0,0);
+    }
+
+    public void moveDown(View view) {
+        worldRender.move(0,-distance,0);
+    }
+    public void rotateLeft(View view) {
+        worldRender.rotateSelf(0,10,0);
+    }
+    public void rotateRight(View view) {
+        worldRender.rotateSelf(0,-10,0);
+    }
+
+    public void rotateDown(View view) {
+        worldRender.rotateSelf(-10,0,0);
+    }
+
+    public void rotateUp(View view) {
+        worldRender.rotateSelf(10,0,0);
+    }
+
+
 }

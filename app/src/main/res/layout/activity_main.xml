@@ -1,23 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <com.aaa.worldmodel.surface.WorldSurfaceView
         android:id="@+id/sv_world"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/moveUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="moveUp"
+            android:text="moveUp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/rotateUp"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/rotateUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="rotateUp"
+            android:text="rotateUp"
+            app:layout_constraintBottom_toTopOf="@id/moveFront"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/moveUp" />
+
+
+        <Button
+            android:id="@+id/moveFront"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="moveFront"
+            android:text="moveFront"
+            app:layout_constraintBottom_toTopOf="@id/moveBack"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rotateUp" />
+
+        <Button
+            android:id="@+id/moveBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="moveBack"
+            android:text="moveBack"
+            app:layout_constraintBottom_toTopOf="@id/rotateDown"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/moveFront" />
+
+        <Button
+            android:id="@+id/rotateDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="rotateDown"
+            android:text="rotateDown"
+            app:layout_constraintBottom_toTopOf="@id/moveDown"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/moveBack" />
+
+        <Button
+            android:id="@+id/moveDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="moveDown"
+            android:text="moveDown"
+            app:layout_constraintBottom_toTopOf="@id/sb_rotateX"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rotateDown" />
+
+        <Button
+            android:id="@+id/moveLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="moveLeft"
+            android:text="moveLeft"
+            app:layout_constraintBottom_toTopOf="@id/rotateLeft"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/rotateLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="rotateLeft"
+            android:text="rotateLeft"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/moveLeft" />
+
+        <Button
+            android:id="@+id/moveRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="moveRight"
+            android:text="moveRight"
+            app:layout_constraintBottom_toTopOf="@id/rotateRight"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/rotateRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="rotateRight"
+            android:text="rotateRight"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/moveRight" />
+
+
+        <TextView
+            android:id="@+id/tv_rotateX"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="旋转 X"
+            app:layout_constraintBottom_toBottomOf="@id/sb_rotateX"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/sb_rotateX" />
+
+        <SeekBar
+            android:id="@+id/sb_rotateX"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:max="360"
+            android:padding="5dp"
+            app:layout_constraintBottom_toTopOf="@id/sb_rotateY"
+            app:layout_constraintLeft_toRightOf="@id/tv_rotateX"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_rotateY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="旋转 Y"
+            app:layout_constraintBottom_toBottomOf="@id/sb_rotateY"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/sb_rotateY" />
+
+        <SeekBar
+            android:id="@+id/sb_rotateY"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:max="360"
+            android:padding="5dp"
+            app:layout_constraintBottom_toTopOf="@id/sb_rotateZ"
+            app:layout_constraintLeft_toRightOf="@id/tv_rotateY"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_rotateZ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="旋转 Z"
+            app:layout_constraintBottom_toBottomOf="@id/sb_rotateZ"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/sb_rotateZ" />
+
+        <SeekBar
+            android:id="@+id/sb_rotateZ"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:max="360"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/tv_rotateZ"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

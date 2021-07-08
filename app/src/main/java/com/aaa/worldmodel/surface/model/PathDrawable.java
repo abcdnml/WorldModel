@@ -33,13 +33,6 @@ public class PathDrawable extends Model {
     }
 
     @Override
-    public void setMatrix(float[] mMatrix, float[] vMatrix, float[] pMatrix) {
-        System.arraycopy(mMatrix, 0, modelMatrix, 0, mMatrix.length);
-        System.arraycopy(vMatrix, 0, mVMatrix, 0, vMatrix.length);
-        System.arraycopy(pMatrix, 0, mProjMatrix, 0, pMatrix.length);
-    }
-
-    @Override
     public void onSurfaceCreate(Context context) {
         vertexShaderCode = ShaderUtil.loadFromAssetsFile("shader/path.vert", context.getResources());
         fragmentShaderCode = ShaderUtil.loadFromAssetsFile("shader/path.frag", context.getResources());

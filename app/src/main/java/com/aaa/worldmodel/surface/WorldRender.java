@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.aaa.worldmodel.move.MoveManager;
 import com.aaa.worldmodel.surface.model.Model;
 import com.aaa.worldmodel.utils.LogUtils;
 
@@ -26,23 +27,21 @@ public class WorldRender implements GLSurfaceView.Renderer {
     private float[] modelMatrix = Model.getOriginalMatrix();
     private float[] mProjMatrix = new float[16];
     private float[] mVMatrix = new float[16];
-    private float[] eye;
     private float[] light;
     private float rotateX = 0;
     private float rotateY = 0;
     private float scale = 1;
+    private MoveManager moveManager;
 
     public WorldRender(GLSurfaceView surfaceView, int bgColor) {
         this.bgColor = bgColor;
         this.surfaceView = surfaceView;
+        this.moveManager = new MoveManager();
         init();
     }
 
     private void init() {
         shapeList = new ArrayList<>();
-        eye = new float[]{
-                0, 9, 0 //eye x y z
-        };
         light = new float[]{
                 -1f, -8f, 0f,       // direction  x y z
                 0.5f, 0.5f, 0.8f,   // ka
@@ -56,7 +55,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         Log.i(TAG, "addShape" + shape.getClass().getName());
         shapeList.add(shape);
         shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
-        shape.setEye(eye);
+        shape.setEye(moveManager.getPosition());
         shape.setLight(light);
     }
 
@@ -85,9 +84,10 @@ public class WorldRender implements GLSurfaceView.Renderer {
         Log.i(TAG, "onSurfaceChanged width: " + width + " height : " + height);
         GLES30.glViewport(0, 0, width, height);
 
+        float[] eye = moveManager.getPosition();
         //眼睛坐标和法向量一定要算好 要不然 看到别的地方去了
-        Matrix.setLookAtM(mVMatrix, 0, eye[0], eye[1], eye[2], 0, 0, 0, 0, 0, -1);
-        Matrix.perspectiveM(mProjMatrix, 0, 90,  (width + 0f) / height, 0.1f, 100);
+        Matrix.setLookAtM(mVMatrix, 0, eye[0], eye[1], eye[2], 0, 0, 0, 0, 1, 0);
+        Matrix.perspectiveM(mProjMatrix, 0, 90, (width + 0f) / height, 0.1f, 100);
         for (Model shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
             shape.onSurfaceChange(width, height);
@@ -104,20 +104,10 @@ public class WorldRender implements GLSurfaceView.Renderer {
         }
     }
 
-    //平移  平移某个模型 还是平移视角  双指平移视角?
-    public void translate() {
-
-    }
-
     //旋转
-    public void rotate(float distanceX, float distanceY) {
+    public void rotateWorld(float distanceX, float distanceY) {
         rotateX = rotateX + distanceX;
-        Log.i(TAG, "onScroll rotateX : " + rotateX + "  rotateY: " + rotateY);
-        if (rotateY + distanceY > 90 * TOUCH_SCALE_AC || rotateY + distanceY < 0) {
-            distanceY = 0;
-        } else {
-            rotateY = rotateY + distanceY;
-        }
+        rotateY = rotateY + distanceY;
 
         Matrix.setRotateM(modelMatrix, 0, -rotateY / TOUCH_SCALE_AC, 1, 0, 0);
         Matrix.rotateM(modelMatrix, 0, -rotateX / TOUCH_SCALE_AC, 0, 1, 0);
@@ -161,6 +151,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
 
     /**
      * 设置颜色
+     *
      * @param color
      */
     public void setBackgroundColor(int color) {
@@ -172,4 +163,54 @@ public class WorldRender implements GLSurfaceView.Renderer {
         GLES30.glClearColor(bgRed, bgGreen, bgBlue, bgAlpha);
     }
 
+    public void move(float distanceX, float distanceY, float distanceZ) {
+        float[] viewMatrix = moveManager.move(distanceX, distanceY, distanceZ);
+        System.arraycopy(viewMatrix, 0, mVMatrix, 0, 16);
+        for (Model shape : shapeList) {
+            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
+        }
+        surfaceView.requestRender();
+    }
+
+    public void moveTo(float x, float y, float z) {
+        float[] viewMatrix = moveManager.moveTo(x, y, z);
+        System.arraycopy(viewMatrix, 0, mVMatrix, 0, 16);
+        for (Model shape : shapeList) {
+            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
+        }
+        surfaceView.requestRender();
+    }
+
+    /**
+     * 环绕某点飞行
+     *
+     * @param centerX
+     * @param centerY
+     * @param degreeX
+     * @param degreeY
+     * @param degreeZ
+     */
+    public void surround(float centerX, float centerY, float degreeX, float degreeY, float degreeZ) {
+
+    }
+
+    public void moveSelf(float distanceX, float distanceY, float distanceZ) {
+
+    }
+
+    /**
+     * 俯仰角(Pitch)、偏航角(Yaw)和滚转角(Roll)
+     *
+     * @param rotateX
+     * @param rotateY
+     * @param rotateZ
+     */
+    public void rotateSelf(float pitch, float yaw, float roll) {
+        float[] viewMatrix=moveManager.rotate(pitch, yaw, roll);
+        System.arraycopy(viewMatrix, 0, mVMatrix, 0, 16);
+        for (Model shape : shapeList) {
+            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
+        }
+        surfaceView.requestRender();
+    }
 }

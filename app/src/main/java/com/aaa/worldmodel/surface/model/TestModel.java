@@ -53,9 +53,7 @@ public class TestModel extends Model {
 
     @Override
     public void setMatrix(float[] mMatrix, float[] vMatrix, float[] pMatrix) {
-        System.arraycopy(mMatrix, 0, this.mMatrix, 0, mMatrix.length);
-        System.arraycopy(vMatrix, 0, this.vMatrix, 0, vMatrix.length);
-        System.arraycopy(pMatrix, 0, this.pMatrix, 0, pMatrix.length);
+        super.setMatrix(mMatrix,vMatrix,pMatrix);
         conbineMatrix();
 
     }
