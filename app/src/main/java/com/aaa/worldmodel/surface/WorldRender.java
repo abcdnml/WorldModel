@@ -7,6 +7,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.aaa.worldmodel.move.MoveManager;
+import com.aaa.worldmodel.move.MovementListener;
 import com.aaa.worldmodel.surface.model.Model;
 import com.aaa.worldmodel.utils.LogUtils;
 
@@ -37,6 +38,13 @@ public class WorldRender implements GLSurfaceView.Renderer {
         this.bgColor = bgColor;
         this.surfaceView = surfaceView;
         this.moveManager = new MoveManager();
+        moveManager.setMovementListener(new MovementListener() {
+            @Override
+            public void onMove(float positionX, float positionY, float positionZ, float directionX, float directionY, float directionZ) {
+                LogUtils.i("position: (" + positionX + "," + positionY + "," + positionZ + ")");
+                LogUtils.i("direction: (" + directionX + "," + directionY + "," + directionZ + ")");
+            }
+        });
         init();
     }
 
@@ -113,20 +121,14 @@ public class WorldRender implements GLSurfaceView.Renderer {
         Matrix.rotateM(modelMatrix, 0, -rotateX / TOUCH_SCALE_AC, 0, 1, 0);
         Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
 
-        for (Model shape : shapeList) {
-            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
-        }
-        surfaceView.requestRender();
+        updateModel();
     }
 
     public void scale(float s) {
         //这样写可以造成一个缩放回弹的效果 回弹效果要在scaleEnd时重新设置回边界大小
         Matrix.scaleM(modelMatrix, 0, s, s, s);
         scale = scale * s;
-        for (Model shape : shapeList) {
-            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
-        }
-        surfaceView.requestRender();
+        updateModel();
     }
 
     public void onScaleEnd(float s) {
@@ -143,10 +145,7 @@ public class WorldRender implements GLSurfaceView.Renderer {
         }
         Matrix.scaleM(modelMatrix, 0, s, s, s);
 
-        for (Model shape : shapeList) {
-            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
-        }
-        surfaceView.requestRender();
+        updateModel();
     }
 
     /**
@@ -164,21 +163,18 @@ public class WorldRender implements GLSurfaceView.Renderer {
     }
 
     public void move(float distanceX, float distanceY, float distanceZ) {
-        float[] viewMatrix = moveManager.move(distanceX, distanceY, distanceZ);
-        System.arraycopy(viewMatrix, 0, mVMatrix, 0, 16);
-        for (Model shape : shapeList) {
-            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
-        }
-        surfaceView.requestRender();
+        mVMatrix = moveManager.move(distanceX, distanceY, distanceZ);
+        updateModel();
+    }
+
+    public void move(float distance) {
+        mVMatrix = moveManager.moveDirection(distance);
+        updateModel();
     }
 
     public void moveTo(float x, float y, float z) {
-        float[] viewMatrix = moveManager.moveTo(x, y, z);
-        System.arraycopy(viewMatrix, 0, mVMatrix, 0, 16);
-        for (Model shape : shapeList) {
-            shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
-        }
-        surfaceView.requestRender();
+        mVMatrix = moveManager.moveTo(x, y, z);
+        updateModel();
     }
 
     /**
@@ -206,8 +202,11 @@ public class WorldRender implements GLSurfaceView.Renderer {
      * @param rotateZ
      */
     public void rotateSelf(float pitch, float yaw, float roll) {
-        float[] viewMatrix=moveManager.rotate(pitch, yaw, roll);
-        System.arraycopy(viewMatrix, 0, mVMatrix, 0, 16);
+        mVMatrix=moveManager.rotate(pitch, yaw, roll);
+        updateModel();
+    }
+
+    private void updateModel(){
         for (Model shape : shapeList) {
             shape.setMatrix(modelMatrix, mVMatrix, mProjMatrix);
         }
